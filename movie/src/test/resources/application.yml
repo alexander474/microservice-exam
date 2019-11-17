@@ -1,0 +1,22 @@
+eureka:
+  client:
+    enabled: false
+spring:
+  main:
+    # need to allow bean overriding in fake security config
+    allow-bean-definition-overriding: true
+  session:
+    # during testing for this service in isolation,
+    # do not use Redis. Disabling SpringSession will fall-back to
+    # default sessions in the servlet
+    store-type: none
+  application:
+    name: movie
+  datasource:
+    url: "jdbc:h2:mem:"
+    driver-class-name: "org.h2.Driver"
+  jpa:
+    database: "h2"
+    hibernate:
+      ddl-auto: "create-drop"
+

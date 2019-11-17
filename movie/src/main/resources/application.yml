@@ -1,0 +1,29 @@
+# From Andrea's repository.
+spring:
+  session:
+    store-type: none
+  application:
+    name: movie
+  datasource:
+    url: "jdbc:postgresql://movie-db:5432/postgres"
+    username: "postgres"
+    password: ""
+    driver-class-name: "org.postgresql.Driver"
+  jpa:
+    database: "postgresql"
+    hibernate:
+      ddl-auto: "create-drop"
+    properties:
+      hibernate:
+        jdbc:
+          lob:  # Disables error-like log in console:
+            non_contextual_creation: true
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    healthcheck:
+      enabled: true
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka/

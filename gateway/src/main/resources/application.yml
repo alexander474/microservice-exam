@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+
+      routes:
+        - id: movie
+          uri: http://movie
+          predicates:
+            - Path=/api/v1/movies/**
+          filters:
+            - StripPrefix=2
+
+        - id: frontend
+          uri: http://frontend
+          predicates:
+            - Path=/**
+          filters:
+            - StripPrefix=0
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    healthcheck:
+      enabled: true
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka/
+

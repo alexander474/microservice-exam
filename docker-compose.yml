@@ -1,0 +1,48 @@
+version: '3.3'
+
+services:
+  #### DATABASE ####
+  movie-db:
+    image: 'postgres:10'
+
+  #### RABBITMQ ####
+  #rabbitmq:
+    #image: "rabbitmq:3"
+
+  #### REDIS ####
+  #redis:
+    #image: 'redis:latest'
+
+  #### GATEWAY ####
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - "80:8080"
+    depends_on:
+      - eureka
+
+  #### EUREKA ####
+  eureka:
+    build:
+      context: ./eureka
+      dockerfile: Dockerfile
+
+  ### FRONTEND ####
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - gateway
+
+  movie:
+    build:
+      context: ./movie
+      dockerfile: Dockerfile
+    environment:
+      - TSDES_SERVICE_ID=A
+    depends_on:
+      - gateway
+      - movie-db

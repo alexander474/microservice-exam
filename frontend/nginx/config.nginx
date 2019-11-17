@@ -1,0 +1,22 @@
+server {
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Never cache index.html, as it has no hash in filename
+    # and references all other resources in case of an upgrade.
+    location ~* (\.manifest|index.html?)$ {
+        expires -1;
+    }
+
+    # Cache everything else with max expiry, since all such resources
+    # has hash in filename that triggers cache busting when needed.
+    location ~ /(css|img|js)/ {
+        etag         on;
+        expires      max;
+    }
+
+}
