@@ -14,23 +14,23 @@ spring:
 
       routes:
         - id: movie
-          uri: http://movie
+          uri: http://movie:8080
           predicates:
             - Path=/api/v1/movies/**
           filters:
             - StripPrefix=2
 
         - id: user
-          uri: http://user
+          uri: http://user:8080
           predicates:
             - Path=/api/v1/users/**
           filters:
             - StripPrefix=2
 
         - id: authentication
-          uri: http://authentication
+          uri: http://authentication:8080
           predicates:
-            - Path=/api/v1/**
+            - Path=/api/v1/auth/**
           filters:
             - StripPrefix=2
 

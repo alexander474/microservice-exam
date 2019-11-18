@@ -12,13 +12,14 @@ import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
 @Api(value = "auth", description = "Authentication Requests")
+@RequestMapping(
+        path = ["/auth"],
+        produces = [(MediaType.APPLICATION_JSON_VALUE)]
+)
 @RestController
 class AuthenticationApi(
         private val authenticationService: AuthenticationService,
@@ -26,7 +27,7 @@ class AuthenticationApi(
         private val userDetailsService: UserDetailsService
 ) {
 
-    @RequestMapping("/user")
+    @GetMapping(path = ["/user"], produces = [(MediaType.APPLICATION_JSON_VALUE)])
     fun user(user: Principal): ResponseEntity<Map<String, Any>> {
         val map = mutableMapOf<String,Any>()
         map["name"] = user.name

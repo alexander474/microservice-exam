@@ -66,6 +66,7 @@ class SecurityTest {
     fun initialize() {
         RestAssured.baseURI = "http://localhost"
         RestAssured.port = port
+        RestAssured.basePath = "/auth"
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
 
         userRepository.deleteAll()
