@@ -1,0 +1,13 @@
+
+.header-row {
+    margin-bottom: 10px;
+}
+
+.header-row-col {
+    padding-right: 0;
+}
+
+.header-row-col-navbar {
+    background-image: linear-gradient(to right, #09203f , #537895);
+    min-height: 5rem;
+}

@@ -130,8 +130,8 @@ class SecurityTest {
                 .get("/user")
                 .then()
                 .statusCode(200)
-                .body("name", CoreMatchers.equalTo(name))
-                .body("roles", Matchers.contains("ROLE_USER"))
+                .body("data.name", CoreMatchers.equalTo(name))
+                .body("data.roles", Matchers.contains("ROLE_USER"))
 
 
         /*
@@ -143,8 +143,8 @@ class SecurityTest {
                 .then()
                 .statusCode(200)
                 .cookie("SESSION") // new SESSION cookie
-                .body("name", CoreMatchers.equalTo(name))
-                .body("roles", Matchers.contains("ROLE_USER"))
+                .body("data.name", CoreMatchers.equalTo(name))
+                .body("data.roles", Matchers.contains("ROLE_USER"))
                 .extract().cookie("SESSION")
 
         Assert.assertNotEquals(basic, cookie)
