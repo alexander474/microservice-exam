@@ -1,4 +1,9 @@
 spring:
+  redis:
+    host: redis
+    port: 6379
+  session:
+    store-type: redis
   application:
     name: gateway
   cloud:
@@ -12,6 +17,20 @@ spring:
           uri: http://movie
           predicates:
             - Path=/api/v1/movies/**
+          filters:
+            - StripPrefix=2
+
+        - id: user
+          uri: http://user
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - StripPrefix=2
+
+        - id: authentication
+          uri: http://authentication
+          predicates:
+            - Path=/api/v1/**
           filters:
             - StripPrefix=2
 

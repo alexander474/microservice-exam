@@ -3,15 +3,21 @@ version: '3.3'
 services:
   #### DATABASE ####
   movie-db:
-    image: 'postgres:10'
+    image: "postgres:10"
+
+  authentication-db:
+    image: "postgres:10"
+
+  user-db:
+    image: "postgres:10"
 
   #### RABBITMQ ####
   #rabbitmq:
     #image: "rabbitmq:3"
 
   #### REDIS ####
-  #redis:
-    #image: 'redis:latest'
+  redis:
+    image: "redis:latest"
 
   #### GATEWAY ####
   gateway:
@@ -22,12 +28,32 @@ services:
       - "80:8080"
     depends_on:
       - eureka
+      - redis
 
   #### EUREKA ####
   eureka:
     build:
       context: ./eureka
       dockerfile: Dockerfile
+
+  #### AUTHENTICATION ####
+  authentication:
+    build:
+      context: ./authentication
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+      - gateway
+      - authentication-db
+
+  user:
+    build:
+      context: ./user
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+      - gateway
+      - user-db
 
   ### FRONTEND ####
   frontend:
@@ -46,3 +72,4 @@ services:
     depends_on:
       - gateway
       - movie-db
+      - redis

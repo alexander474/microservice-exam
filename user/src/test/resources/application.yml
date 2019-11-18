@@ -1,12 +1,11 @@
-userServiceAddress: "localhost:8099"
-eureka:
-  client:
-    enabled: false
 spring:
   main:
     # need to allow bean overriding in fake security config
     allow-bean-definition-overriding: true
   session:
+    # during testing for this service in isolation,
+    # do not use Redis. Disabling SpringSession will fall-back to
+    # default sessions in the servlet
     store-type: none
   datasource:
     url: "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
@@ -16,5 +15,11 @@ spring:
     hibernate:
       ddl-auto: "create-drop"
     show-sql: true
-  flyway:
+
+eureka:
+  client:
     enabled: false
+
+logging:
+  level:
+    org.springframework.security: debug

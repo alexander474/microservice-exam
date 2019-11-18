@@ -1,6 +1,3 @@
-userServiceAddress: "user:8080"
-
-# From Andrea's repository.
 spring:
   session:
     store-type: redis
@@ -8,9 +5,9 @@ spring:
     host: redis
     port: 6379
   application:
-    name: movie
+    name: user
   datasource:
-    url: "jdbc:postgresql://movie-db:5432/postgres"
+    url: "jdbc:postgresql://user-db:5432/postgres"
     username: "postgres"
     password: ""
     driver-class-name: "org.postgresql.Driver"
@@ -24,6 +21,7 @@ spring:
           lob:  # Disables error-like log in console:
             non_contextual_creation: true
 
+
 eureka:
   instance:
     preferIpAddress: true
@@ -32,3 +30,7 @@ eureka:
       enabled: true
     serviceUrl:
       defaultZone: http://eureka:8761/eureka/
+
+logging:
+  level:
+    org.springframework.security: debug

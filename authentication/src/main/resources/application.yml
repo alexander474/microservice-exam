@@ -1,28 +1,28 @@
-userServiceAddress: "user:8080"
-
-# From Andrea's repository.
 spring:
   session:
     store-type: redis
+  application:
+    name: authentication
   redis:
     host: redis
     port: 6379
-  application:
-    name: movie
   datasource:
-    url: "jdbc:postgresql://movie-db:5432/postgres"
+    url: "jdbc:postgresql://authentication-db:5432/postgres"
     username: "postgres"
     password: ""
     driver-class-name: "org.postgresql.Driver"
   jpa:
     database: "postgresql"
     hibernate:
-      ddl-auto: "create-drop"
+      # We should rather use Flyway. But for simplicity, here rely
+      # on Hibernate to handle the schema (which is usually not a good idea).
+      ddl-auto: "update"
     properties:
       hibernate:
         jdbc:
           lob:  # Disables error-like log in console:
             non_contextual_creation: true
+
 
 eureka:
   instance:

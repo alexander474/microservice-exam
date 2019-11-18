@@ -40,6 +40,8 @@
         <module>eureka</module>
         <module>movie</module>
         <module>frontend</module>
+        <module>authentication</module>
+        <module>user</module>
     </modules>
 
     <parent>
