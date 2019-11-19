@@ -17,9 +17,10 @@ class PostService {
     @Autowired
     private lateinit var postRepository: PostRepository
 
-    fun getAll(userIds: List<String>?, offset: Int, limit: Int, onDb:Long, maxPageLimit: Int, builder: UriComponentsBuilder): PageDto<PostDto> {
-        if(userIds === null || userIds.isEmpty()) return PostConverter().transform(ArrayList<PostEntity>(), offset, limit, onDb, maxPageLimit, builder)
-        val list = postRepository.getAllPostsByUserId(userIds, offset, limit)
+    fun getAll(userId: String, userIds: List<String>, offset: Int, limit: Int, onDb:Long, maxPageLimit: Int, builder: UriComponentsBuilder): PageDto<PostDto> {
+        val ids = userIds.toMutableSet()
+        ids.add(userId)
+        val list = postRepository.getAllPostsByUserId(ids, offset, limit)
         return PostConverter().transform(list, offset, limit, onDb, maxPageLimit, builder)
     }
 
@@ -34,12 +35,12 @@ class PostService {
     }
 
 
-    fun createPost(postDto: PostDto, userDto: UserDto): Long{
+    fun createPost(postDto: PostDto, userId: String): Long{
         val postEntity = PostEntity(
                 title = postDto.title,
                 message = postDto.message,
                 date = LocalDate.parse(postDto.date),
-                userId = userDto.userId
+                userId = userId
         )
 
         postRepository.save(postEntity)

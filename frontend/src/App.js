@@ -24,10 +24,17 @@ export default class App extends React.Component {
     }
 
     async componentDidMount() {
-        const res = await requestHandler.getAuthUser().catch(e => {
+        await requestHandler.getAuthUser().then(res => {
+            if(res.status === 200){
+                if(res.data !== null && res.data !== undefined) {
+                    if (res.data.data !== null && res.data.data !== undefined) {
+                        this.onUserChange(res.data.data);
+                    }
+                }
+            }
+        }).catch(e => {
             // no authenticated user found
         });
-        this.onUserChange(res.data.data);
     }
 
 
@@ -35,7 +42,7 @@ export default class App extends React.Component {
         if(user !== null){
             this.onIsLoggedInChange(true);
             if(user.roles !== null) {
-                this.onisAdminChange(user.roles.includes("ADMIN"))
+                this.onisAdminChange(user.roles.includes("ROLE_ADMIN"))
             }
         }else{
             this.onIsLoggedInChange(false);

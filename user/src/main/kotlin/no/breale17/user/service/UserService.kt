@@ -33,14 +33,13 @@ class UserService {
         return UserConverter().transform(entity)
     }
 
-    fun createUser(userDto: UserDto): UserDto{
-        val userEntity = UserEntity(userDto.userId,userDto.name,userDto.middleName,userDto.surname, userDto.email);
+    fun saveUser(userDto: UserDto): UserDto?{
+        val userEntity = UserEntity(userDto.userId,userDto.name,userDto.middleName,userDto.surname, userDto.email)
         return UserConverter().transform(userRepository.save(userEntity))
     }
 
-    fun updateUser(userDto: UserDto): UserDto?{
-        if(userDto.userId === null && userDto.userId?.let { getById(it) } !== null) return null
-        val userEntity = UserEntity(userDto.userId,userDto.name,userDto.middleName,userDto.surname, userDto.email);
+    fun saveUser(userId: String,userDto: UserDto): UserDto?{
+        val userEntity = UserEntity(userId,userDto.name,userDto.middleName,userDto.surname, userDto.email)
         return UserConverter().transform(userRepository.save(userEntity))
     }
 }

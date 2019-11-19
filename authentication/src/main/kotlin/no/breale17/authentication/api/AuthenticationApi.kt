@@ -54,7 +54,7 @@ class AuthenticationApi(
             return ResponseEntity.status(400).body(
                     WrappedResponse<Void>(
                             code = 400,
-                            message = "Wrong username or password"
+                            message = "Username already exists"
                     ).validated()
             )
         }

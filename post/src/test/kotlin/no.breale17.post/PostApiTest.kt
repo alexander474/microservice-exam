@@ -46,11 +46,8 @@ class PostApiTest : TestBase(){
         val message = "TestDescription"
         val allPosts = getAllPosts()
 
-        val res = getAMockedJsonResponse(id,"a","a","a","a@a.com","")
-        stubJsonResponse(res,id)
-
         val location = RestAssured.given().auth().basic(id, "123").contentType(ContentType.JSON)
-                .body(PostDto(title, message, initTestDate.toString(), id))
+                .body(PostDto(title, message, initTestDate.toString()))
                 .post()
                 .then()
                 .statusCode(201)

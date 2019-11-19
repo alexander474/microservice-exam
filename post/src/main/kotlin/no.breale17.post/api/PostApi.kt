@@ -58,10 +58,10 @@ class PostApi {
             @ApiParam("Limit of news in a single retrieved page")
             @RequestParam("limit", defaultValue = "10")
             limit: Int,
-            user: Principal
+            principal: Principal
     ): ResponseEntity<WrappedResponse<PageDto<PostDto>>>{
         val uri = UriComponentsBuilder
-                .fromUriString("http://${userServiceAddress.trim()}/users/${user.name}")
+                .fromUriString("http://${userServiceAddress.trim()}/users/${principal.name}")
                 .build().toUri()
 
         val client = RestTemplate()
@@ -83,13 +83,13 @@ class PostApi {
                 */
                 return ResponseEntity.status(400).body(
                         WrappedResponse<PageDto<PostDto>>(
-                                message = "",
+                                message = e.message,
                                 code = 400
                         ).validated())
             } else {
                 return ResponseEntity.status(500).body(
                         WrappedResponse<PageDto<PostDto>>(
-                                message = "",
+                                message = e.message,
                                 code = 500
                         ).validated())
             }
@@ -101,7 +101,7 @@ class PostApi {
         if(user === null){
             return ResponseEntity.status(400).body(
                     WrappedResponse<PageDto<PostDto>>(
-                            message = "",
+                            message = "User was not found",
                             code = 400
                     )
                             .validated())
@@ -120,7 +120,7 @@ class PostApi {
         var builder = UriComponentsBuilder
                 .fromPath("/posts")
 
-        val posts = postService.getAll(user.friends, offset, limit, onDbWithId, maxPageLimit, builder)
+        val posts = postService.getAll(principal.name,user.friends, offset, limit, onDbWithId, maxPageLimit, builder)
         return ResponseEntity.ok(
                 WrappedResponse(
                         code = 200,
@@ -182,46 +182,15 @@ class PostApi {
                    cookie: String?,
                    user: Principal): ResponseEntity<WrappedResponse<Unit>> {
 
-        val uri = UriComponentsBuilder
-                .fromUriString("http://${userServiceAddress.trim()}/users/${user.name}")
-                .build().toUri()
 
-        val client = RestTemplate()
-
-        val requestHeaders = HttpHeaders()
-        if (ignoreSession == null || !ignoreSession) {
-            requestHeaders.add("cookie", "SESSION=$cookie")
-        }
-        val requestEntity = HttpEntity(null, requestHeaders)
-
-        val response = try {
-            client.exchange(uri, HttpMethod.GET, requestEntity, UserDto::class.java)
-        } catch (e: HttpStatusCodeException) {
-            return if (e.statusCode.value() == 403) {
-                /*
-                   Note: this is just an example.
-                   Using a different code just to make sure
-                   to distinguish this case in the tests
-                */
-                return ResponseEntity.status(400).body(
-                        WrappedResponse<Unit>(code = 400).validated())
-            } else {
-                return ResponseEntity.status(500).body(
-                        WrappedResponse<Unit>(code = 500).validated())
-            }
-        }
-
-        val user = response.body
-
-
-        if(user === null){
+        if(user.name === null){
             return ResponseEntity.status(400).body(
                     WrappedResponse<Unit>(code = 400)
                             .validated())
         }
 
 
-        val id = postService.createPost(postDto, user)
+        val id = postService.createPost(postDto, user.name)
 
         if(id == -1L){
             return ResponseEntity.status(400).body(

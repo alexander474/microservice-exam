@@ -19,7 +19,7 @@ interface PostRepositoryCustom{
 
     fun numberOfPosts(userIds: List<String>): Long
 
-    fun getAllPostsByUserId(userIds: List<String>, offset: Int, limit: Int): List<PostEntity>
+    fun getAllPostsByUserId(userIds: Iterable<String>, offset: Int, limit: Int): List<PostEntity>
 }
 
 @Repository
@@ -37,7 +37,7 @@ open class PostRepositoryImpl : PostRepositoryCustom {
         return query.singleResult
     }
 
-    override fun getAllPostsByUserId(userIds: List<String>, offset: Int, limit: Int): List<PostEntity> {
+    override fun getAllPostsByUserId(userIds: Iterable<String>, offset: Int, limit: Int): List<PostEntity> {
 
         val query: TypedQuery<PostEntity>
         query = em.createQuery("select p from PostEntity p where p.userId in :ids order by p.id", PostEntity::class.java)

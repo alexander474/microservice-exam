@@ -34,6 +34,18 @@ const getUserInformation = async (userId) => {
     })
 };
 
+const getUserCount = async (userId) => {
+    return await axios.get(basePath+'/users/userCount').then(response => {
+        return response
+    })
+};
+
+const getAllPosts = async (path = '/posts') => {
+    return await axios.get(basePath+path).then(response => {
+        return response
+    })
+};
+
 const logout = async () => {
     return await axios.get(basePath+'/auth/logout').then(response => {
         return response
@@ -46,5 +58,7 @@ export const requestHandler = {
     logout,
     signUp,
     getAuthUser,
-    getUserInformation
+    getUserInformation,
+    getUserCount,
+    getAllPosts
 };
