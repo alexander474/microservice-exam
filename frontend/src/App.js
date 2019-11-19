@@ -5,9 +5,11 @@ import {BrowserRouter, Switch, Route} from 'react-router-dom';
 
 
 import HomePage from "./view/HomePage";
-import Login from "./components/authentication/Login"
-import Signup from "./components/authentication/Signup"
+import Login from "./view/authentication/Login"
+import Signup from "./view/authentication/Signup"
 import Header from "./components/header/Header";
+import "./Global.css"
+import { requestHandler } from "./utils/RequestHandler";
 
 
 export default class App extends React.Component {
@@ -21,10 +23,23 @@ export default class App extends React.Component {
         };
     }
 
+    async componentDidMount() {
+        const res = await requestHandler.getAuthUser().catch(e => {
+            // no authenticated user found
+        });
+        this.onUserChange(res.data.data);
+    }
+
+
     onUserChange = (user) => {
         if(user !== null){
             this.onIsLoggedInChange(true);
-            this.onisAdminChange(user.roles.contains("ADMIN"))
+            if(user.roles !== null) {
+                this.onisAdminChange(user.roles.includes("ADMIN"))
+            }
+        }else{
+            this.onIsLoggedInChange(false);
+            this.onisAdminChange(false);
         }
         this.setState({user});
     };
@@ -54,16 +69,36 @@ export default class App extends React.Component {
         return (
             <BrowserRouter>
                 <div>
-                    <Header/>
-                    <Switch>
-                        <Route exact path="/"
-                               render={props => <HomePage onUserChange={this.onUserChange} {...props}/>}/>
-                        <Route exact path="/login"
-                               render={props => <Login onUserChange={this.onUserChange} {...props}/>}/>
-                        <Route exact path="/register"
-                               render={props => <Signup onUserChange={this.onUserChange} {...props}/>}/>
-                        <Route component={this.notFound}/>
-                    </Switch>
+                    <Header
+                        isLoggedIn={this.state.isLoggedIn}
+                        isAdmin={this.state.isAdmin}
+                        user={this.state.user}/>
+                    <div className={"content-view"}>
+                        <Switch>
+                            <Route exact path="/"
+                                   render={props => <HomePage
+                                       onUserChange={this.onUserChange}
+                                       isLoggedIn={this.state.isLoggedIn}
+                                       isAdmin={this.state.isAdmin}
+                                       user={this.state.user}
+                                       {...props}/>}/>
+                            <Route exact path="/login"
+                                   render={props => <Login
+                                       onUserChange={this.onUserChange}
+                                       isLoggedIn={this.state.isLoggedIn}
+                                       isAdmin={this.state.isAdmin}
+                                       user={this.state.user}
+                                       {...props}/>}/>
+                            <Route exact path="/register"
+                                   render={props => <Signup
+                                       onUserChange={this.onUserChange}
+                                       isLoggedIn={this.state.isLoggedIn}
+                                       isAdmin={this.state.isAdmin}
+                                       user={this.state.user}
+                                       {...props}/>}/>
+                            <Route component={this.notFound}/>
+                        </Switch>
+                    </div>
                 </div>
             </BrowserRouter>
         );
