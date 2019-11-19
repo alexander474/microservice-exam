@@ -9,5 +9,7 @@ class UserDto(
 
         var surname: String? = null,
 
-        var email: String? = null
+        var email: String? = null,
+
+        var friends: List<String>? = null
 )

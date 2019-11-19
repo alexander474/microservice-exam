@@ -38,10 +38,10 @@
         <module>utils</module>
         <module>report</module>
         <module>eureka</module>
-        <module>movie</module>
         <module>frontend</module>
         <module>authentication</module>
         <module>user</module>
+        <module>post</module>
     </modules>
 
     <parent>

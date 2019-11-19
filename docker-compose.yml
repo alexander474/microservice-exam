@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   #### DATABASE ####
-  movie-db:
+  post-db:
     image: "postgres:10"
 
   authentication-db:
@@ -63,13 +63,13 @@ services:
     depends_on:
       - gateway
 
-  movie:
+  post:
     build:
-      context: ./movie
+      context: ./post
       dockerfile: Dockerfile
     environment:
       - TSDES_SERVICE_ID=A
     depends_on:
       - gateway
-      - movie-db
+      - post-db
       - redis

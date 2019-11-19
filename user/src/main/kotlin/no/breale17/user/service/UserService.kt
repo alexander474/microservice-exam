@@ -8,6 +8,7 @@ import no.utils.pagination.PageDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.web.util.UriComponentsBuilder
 
 @Service
 class UserService {
@@ -19,8 +20,12 @@ class UserService {
         return userRepository.existsById(id)
     }
 
-    fun getAll(): PageDto<UserDto> {
-        return UserConverter().transform(userRepository.findAll())
+    fun getAll(offset: Int, limit: Int, onDb:Long, maxPageLimit: Int, builder: UriComponentsBuilder): PageDto<UserDto> {
+        return UserConverter().transform(userRepository.findAll(), offset, limit, onDb, maxPageLimit, builder)
+    }
+
+    fun getNumberOfUsers(): Long{
+        return userRepository.numberOfUsers()
     }
 
     fun getById(id: String): UserDto?{

@@ -13,10 +13,10 @@ spring:
           enabled: true
 
       routes:
-        - id: movie
-          uri: http://movie:8080
+        - id: post
+          uri: http://post:8080
           predicates:
-            - Path=/api/v1/movies/**
+            - Path=/api/v1/posts/**
           filters:
             - StripPrefix=2
 
