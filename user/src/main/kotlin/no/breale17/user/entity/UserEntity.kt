@@ -30,5 +30,13 @@ class UserEntity (
 
     @get:ElementCollection
     @Column(name="friends")
-    var friends: Set<String>? = setOf()
+    var friends: Set<String>? = setOf(),
+
+    @get:ElementCollection
+    @Column(name="requestsIn")
+    var requestsIn: Set<String>? = setOf(),
+
+    @get:ElementCollection
+    @Column(name="requestsOut")
+    var requestsOut: Set<String>? = setOf()
 )

@@ -15,7 +15,9 @@ class UserConverter {
                 middleName = entity.middleName,
                 surname = entity.surname,
                 email = entity.email,
-                friends = entity.friends!!.toList()
+                friends = entity.friends!!.toList(),
+                requestsIn = entity.requestsIn!!.toList(),
+                requestsOut = entity.requestsOut!!.toList()
         )
     }
 

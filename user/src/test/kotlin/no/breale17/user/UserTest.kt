@@ -2,9 +2,12 @@ package no.breale17.user
 
 import io.restassured.RestAssured
 import io.restassured.http.ContentType
+import no.breale17.dto.FriendRequestDto
+import no.breale17.dto.FriendRequestStatus
 import no.breale17.dto.UserDto
 import no.breale17.user.repository.UserRepository
 import org.hamcrest.CoreMatchers
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -94,6 +97,166 @@ class UserTest{
                 .statusCode(201)
 
         checkSize(1)
+    }
+
+    @Test
+    fun testAddFriend(){
+        val id = "foo"
+        val dto = UserDto(id, "A", "B", "C", "a@a.com")
+        val id2 = "bar"
+        val dto2 = UserDto(id2, "A2", "B2", "C2", "a2@a.com")
+        val friendRequest = FriendRequestDto(id, id2)
+        val friendRequestResponse = FriendRequestDto(id, id2, FriendRequestStatus.APPROVED)
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .put("/$id")
+                .then()
+                .statusCode(201)
+
+        RestAssured.given().auth().basic(id2,"123")
+                .contentType(ContentType.JSON)
+                .body(dto2)
+                .put("/$id2")
+                .then()
+                .statusCode(201)
+
+        //Send friend request from foo
+        RestAssured.given().auth().basic(id,"123")
+                .contentType(ContentType.JSON)
+                .body(friendRequest)
+                .post("/friendrequest")
+                .then()
+                .statusCode(200)
+
+        //Check that request is stored in both users
+        RestAssured.given().auth().basic(id,"123")
+                .accept(ContentType.JSON)
+                .get("/$id")
+                .then()
+                .statusCode(200)
+                .body("data.friends.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsOut.size()", CoreMatchers.equalTo(1))
+
+        RestAssured.given().auth().basic(id2,"123")
+                .accept(ContentType.JSON)
+                .get("/$id2")
+                .then()
+                .statusCode(200)
+                .body("data.friends.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsIn.size()", CoreMatchers.equalTo(1))
+                .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
+
+        //Approve friend request from bar
+        RestAssured.given().auth().basic(id2,"123")
+                .contentType(ContentType.JSON)
+                .body(friendRequestResponse)
+                .put("/friendrequest")
+                .then()
+                .statusCode(200)
+
+        //Check that they are friends
+        RestAssured.given().auth().basic(id,"123")
+                .accept(ContentType.JSON)
+                .get("/$id")
+                .then()
+                .statusCode(200)
+                .body("data.friends", Matchers.contains(id2))
+                .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
+
+
+        RestAssured.given().auth().basic(id2,"123")
+                .accept(ContentType.JSON)
+                .get("/$id2")
+                .then()
+                .statusCode(200)
+                .body("data.friends", Matchers.contains(id))
+                .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
+
+    }
+
+    @Test
+    fun testDenyFriendRequest(){
+        val id = "foo"
+        val dto = UserDto(id, "A", "B", "C", "a@a.com")
+        val id2 = "bar"
+        val dto2 = UserDto(id2, "A2", "B2", "C2", "a2@a.com")
+        val friendRequest = FriendRequestDto(id, id2)
+        val friendRequestResponse = FriendRequestDto(id, id2, FriendRequestStatus.DENIED)
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .put("/$id")
+                .then()
+                .statusCode(201)
+
+        RestAssured.given().auth().basic(id2,"123")
+                .contentType(ContentType.JSON)
+                .body(dto2)
+                .put("/$id2")
+                .then()
+                .statusCode(201)
+
+        //Send friend request from foo
+        RestAssured.given().auth().basic(id,"123")
+                .contentType(ContentType.JSON)
+                .body(friendRequest)
+                .post("/friendrequest")
+                .then()
+                .statusCode(200)
+
+        //Check that request is stored in both users
+        RestAssured.given().auth().basic(id,"123")
+                .accept(ContentType.JSON)
+                .get("/$id")
+                .then()
+                .statusCode(200)
+                .body("data.friends.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsOut.size()", CoreMatchers.equalTo(1))
+
+        RestAssured.given().auth().basic(id2,"123")
+                .accept(ContentType.JSON)
+                .get("/$id2")
+                .then()
+                .statusCode(200)
+                .body("data.friends.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsIn.size()", CoreMatchers.equalTo(1))
+                .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
+
+        //Deny friend request from bar
+        RestAssured.given().auth().basic(id2,"123")
+                .contentType(ContentType.JSON)
+                .body(friendRequestResponse)
+                .put("/friendrequest")
+                .then()
+                .statusCode(200)
+
+        //Check that they are not friends and request is deleted
+        RestAssured.given().auth().basic(id,"123")
+                .accept(ContentType.JSON)
+                .get("/$id")
+                .then()
+                .statusCode(200)
+                .body("data.friends.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
+
+
+        RestAssured.given().auth().basic(id2,"123")
+                .accept(ContentType.JSON)
+                .get("/$id2")
+                .then()
+                .statusCode(200)
+                .body("data.friends.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
+
     }
 
     @Test

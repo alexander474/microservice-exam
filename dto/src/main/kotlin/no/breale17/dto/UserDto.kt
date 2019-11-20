@@ -11,5 +11,9 @@ class UserDto(
 
         var email: String? = null,
 
-        var friends: List<String> = listOf()
+        var friends: List<String> = listOf(),
+
+        var requestsIn: List<String> = listOf(),
+
+        var requestsOut: List<String> = listOf()
 )

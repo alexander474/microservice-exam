@@ -3,14 +3,14 @@ package no.breale17.user.api
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
+import no.breale17.dto.FriendRequestDto
+import no.breale17.dto.FriendRequestStatus
 import no.breale17.dto.UserDto
-import no.breale17.user.converter.UserConverter
 import no.breale17.user.service.UserService
 import no.utils.pagination.PageDto
 import no.utils.wrapper.WrappedResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.*
-import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
@@ -132,5 +132,86 @@ class UserApi {
                 ).validated())
     }
 
+    @ApiOperation("Create a friendrequest")
+    @PostMapping(path = ["/friendrequest"],consumes = [(MediaType.APPLICATION_JSON_UTF8_VALUE)])
+    fun createFriendRequest(@ApiParam("Information for new movie")
+                   @RequestBody friendRequest: FriendRequestDto,
+                            @RequestParam("ignoreSession", required = false) ignoreSession: Boolean?,
+                            @CookieValue("SESSION", required = false)
+                   cookie: String?,
+                            user: Principal): ResponseEntity<WrappedResponse<Unit>> {
 
+
+        if(user.name === null){
+            return ResponseEntity.status(400).body(
+                    WrappedResponse<Unit>(code = 400)
+                            .validated())
+        }
+
+        if(friendRequest.from === null || friendRequest.to === null){
+            return ResponseEntity.status(400).body(
+                    WrappedResponse<Unit>(
+                            code = 400,
+                            message = "Not a valid object"
+                    ).validated())
+        }
+
+        if(friendRequest.from != user.name){
+            return ResponseEntity.status(400).body(
+                    WrappedResponse<Unit>(
+                            code = 400,
+                            message = "You can only send friend requests from you're user"
+                    ).validated())
+        }
+
+
+        val sent = userServce.sendRequest(friendRequest.from!!, friendRequest.to!!)
+
+        if(!sent){
+            return ResponseEntity.status(400).body(
+                    WrappedResponse<Unit>(code = 400, message = "Unable to send request")
+                            .validated())
+        }
+
+        return ResponseEntity.status(200).body(
+                WrappedResponse<Unit>(code = 200, message = "Friend request sent").validated())
+    }
+
+    @ApiOperation("Create a friendrequest")
+    @PutMapping(path = ["/friendrequest"],consumes = [(MediaType.APPLICATION_JSON_UTF8_VALUE)])
+    fun answerFriendRequest(@ApiParam("Information for new movie")
+                            @RequestBody friendRequest: FriendRequestDto,
+                            @RequestParam("ignoreSession", required = false) ignoreSession: Boolean?,
+                            @CookieValue("SESSION", required = false)
+                            cookie: String?,
+                            user: Principal): ResponseEntity<WrappedResponse<Unit>> {
+
+
+        if(user.name === null){
+            return ResponseEntity.status(400).body(
+                    WrappedResponse<Unit>(code = 400)
+                            .validated())
+        }
+
+        if(friendRequest.from === null || friendRequest.to === null || friendRequest.status === null){
+            return ResponseEntity.status(400).body(
+                    WrappedResponse<Unit>(
+                            code = 400,
+                            message = "Not a valid object"
+                    ).validated())
+        }
+
+
+        var message = ""
+        if(friendRequest.status === FriendRequestStatus.APPROVED){
+            userServce.addFriend(friendRequest.from!!, friendRequest.to!!)
+            message = "FRIEND ADDED"
+        }else if(friendRequest.status === FriendRequestStatus.DENIED){
+            userServce.removeRequest(friendRequest.from!!, friendRequest.to!!)
+            message = "FRIEND REQUEST REMOVED"
+        }
+
+        return ResponseEntity.status(200).body(
+                WrappedResponse<Unit>(code = 200, message = message).validated())
+    }
 }

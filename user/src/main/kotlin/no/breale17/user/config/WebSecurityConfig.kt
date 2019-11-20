@@ -22,6 +22,7 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
                 .authorizeRequests()
                 .antMatchers("/users/userCount").permitAll()
                 .antMatchers("/users").hasRole("ADMIN")
+                .antMatchers("/users/friendrequest").hasRole("USER")
                 .antMatchers("/users/{id}/**")
                 .access("hasRole('USER') and @userSecurity.checkId(authentication, #id)")
                 .anyRequest().denyAll()
