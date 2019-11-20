@@ -46,7 +46,7 @@ export class Signup extends React.Component{
                     if(res.status === 200){
                         console.log(res)
                         onUserChange(res.data.data)
-                        this.props.history.push('/');
+                        this.props.history.push('/register/userinformation/'+res.data.data.name);
                     }else if(res.message !== null){
                         this.setState({errorMsg: res.data.message});
                     }

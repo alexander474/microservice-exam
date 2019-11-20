@@ -8,6 +8,7 @@ import HomePage from "./view/HomePage";
 import Login from "./view/authentication/Login"
 import Signup from "./view/authentication/Signup"
 import Header from "./components/header/Header";
+import UserInformationForm from "./components/userinformation/UserInformationForm";
 import "./Global.css"
 import { requestHandler } from "./utils/RequestHandler";
 
@@ -19,7 +20,8 @@ export default class App extends React.Component {
         this.state = {
             user: null,
             isLoggedIn: false,
-            isAdmin: false
+            isAdmin: false,
+            userInformation: null
         };
     }
 
@@ -38,7 +40,32 @@ export default class App extends React.Component {
     }
 
 
-    onUserChange = (user) => {
+    getUserInformation = async (user) => {
+        if(user !== null) {
+            await requestHandler.getUserInformation(user.name).then(res => {
+                console.log(res);
+                if (res.status === 200) {
+                    if (res.data !== null && res.data !== undefined) {
+                        if (res.data.data !== null && res.data.data !== undefined) {
+                            this.onUserInfoChange(res.data.data);
+                        }
+                    }
+                }
+            }).catch(e => {
+                // no user found
+            });
+        }
+    };
+
+
+    onUserInfoChange = (userInformation) => {
+        if(userInformation !== null){
+            this.setState({userInformation})
+        }
+    };
+
+
+    onUserChange = async (user) => {
         if(user !== null){
             this.onIsLoggedInChange(true);
             if(user.roles !== null) {
@@ -48,7 +75,8 @@ export default class App extends React.Component {
             this.onIsLoggedInChange(false);
             this.onisAdminChange(false);
         }
-        this.setState({user});
+        await this.setState({user});
+        await this.getUserInformation(user);
     };
 
     onIsLoggedInChange = (isLoggedIn) => {
@@ -88,6 +116,7 @@ export default class App extends React.Component {
                                        isLoggedIn={this.state.isLoggedIn}
                                        isAdmin={this.state.isAdmin}
                                        user={this.state.user}
+                                       userInformation={this.state.userInformation}
                                        {...props}/>}/>
                             <Route exact path="/login"
                                    render={props => <Login
@@ -95,6 +124,15 @@ export default class App extends React.Component {
                                        isLoggedIn={this.state.isLoggedIn}
                                        isAdmin={this.state.isAdmin}
                                        user={this.state.user}
+                                       userInformation={this.state.userInformation}
+                                       {...props}/>}/>
+                            <Route exact path="/register/userinformation/:userId"
+                                   render={props => <UserInformationForm
+                                       onUserChange={this.onUserChange}
+                                       isLoggedIn={this.state.isLoggedIn}
+                                       isAdmin={this.state.isAdmin}
+                                       user={this.state.user}
+                                       userInformation={this.state.userInformation}
                                        {...props}/>}/>
                             <Route exact path="/register"
                                    render={props => <Signup
@@ -102,6 +140,7 @@ export default class App extends React.Component {
                                        isLoggedIn={this.state.isLoggedIn}
                                        isAdmin={this.state.isAdmin}
                                        user={this.state.user}
+                                       userInformation={this.state.userInformation}
                                        {...props}/>}/>
                             <Route component={this.notFound}/>
                         </Switch>

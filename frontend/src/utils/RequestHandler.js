@@ -1,9 +1,11 @@
 import axios from 'axios';
 
-const basePath = "api/v1";
+const baseURL = "/api/v1";
+const instance = axios.create({baseURL})
+
 
 const login = async (username, password) => {
-    return await axios.post(basePath+'/auth/login',
+    return await instance.post('/auth/login',
         {
             'userId': username,
             'password': password
@@ -13,7 +15,7 @@ const login = async (username, password) => {
 };
 
 const signUp = async (username, password) => {
-    return await axios.post(basePath+'/auth/signUp',
+    return await instance.post('/auth/signUp',
         {
             'userId': username,
             'password': password
@@ -23,31 +25,56 @@ const signUp = async (username, password) => {
 };
 
 const getAuthUser = async () => {
-    return await axios.get(basePath+'/auth/user',).then(response => {
+    return await instance.get('/auth/user',).then(response => {
+        return response
+    })
+};
+
+const updateUserInformation = async (userId, name, surname, middlename, email) => {
+    return await instance.put('/users/'+userId,
+        {
+            'userId': userId,
+            'name': name,
+            'surname': surname,
+            'middlename': middlename,
+            'email': email
+        }).then(response => {
         return response
     })
 };
 
 const getUserInformation = async (userId) => {
-    return await axios.get(basePath+'/users/'+userId).then(response => {
+    return await instance.get('/users/'+userId).then(response => {
         return response
     })
 };
 
 const getUserCount = async (userId) => {
-    return await axios.get(basePath+'/users/userCount').then(response => {
+    return await instance.get('/users/userCount').then(response => {
         return response
     })
 };
 
 const getAllPosts = async (path = '/posts') => {
-    return await axios.get(basePath+path).then(response => {
+    return await instance.get(path).then(response => {
+        return response
+    })
+};
+
+const createPost = async (title, message) => {
+    const dateObj = new Date();
+    const date = dateObj.getFullYear()+"-"+dateObj.getMonth()+"-"+dateObj.getDay();
+    return await instance.post('/posts',
+        {
+            'title': title,
+            'message': message
+        }).then(response => {
         return response
     })
 };
 
 const logout = async () => {
-    return await axios.get(basePath+'/auth/logout').then(response => {
+    return await instance.post('/auth/logout').then(response => {
         return response
     })
 };
@@ -60,5 +87,7 @@ export const requestHandler = {
     getAuthUser,
     getUserInformation,
     getUserCount,
-    getAllPosts
+    getAllPosts,
+    updateUserInformation,
+    createPost
 };

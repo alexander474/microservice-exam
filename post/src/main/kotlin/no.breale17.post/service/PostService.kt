@@ -39,7 +39,7 @@ class PostService {
         val postEntity = PostEntity(
                 title = postDto.title,
                 message = postDto.message,
-                date = LocalDate.parse(postDto.date),
+                date = System.currentTimeMillis() / 1000L,
                 userId = userId
         )
 
@@ -51,7 +51,7 @@ class PostService {
         val postEntity = PostEntity(
                 postDto.title,
                 postDto.message,
-                LocalDate.parse(postDto.date),
+                postDto.date!!.toLong(),
                 postDto.userId,
                 postDto.id?.toLong()
         )

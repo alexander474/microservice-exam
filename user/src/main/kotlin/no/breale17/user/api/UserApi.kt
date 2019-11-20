@@ -87,7 +87,7 @@ class UserApi {
             return ResponseEntity.status(404).body(
                     WrappedResponse<UserDto>(
                             code = 404,
-                            message = "User cannot be null"
+                            message = "User not found"
                     ).validated()
             )
         }

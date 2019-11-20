@@ -11,6 +11,7 @@ import {
     PaginationLink
 } from "reactstrap";
 import {requestHandler} from "../../utils/RequestHandler"
+import { readableTime } from "../../utils/UnixTranslate";
 
 export default class Post extends React.Component {
     constructor(props) {
@@ -43,12 +44,13 @@ export default class Post extends React.Component {
         const { posts } = this.state;
         return (
             <div>
+                <Badge onClick={()=>this.getPosts()} color="secondary">Reload</Badge>
                 { posts !== null ? posts.map((p,i) => (
-                    <Card>
+                    <Card style={{marginTop: "1rem", marginBottom: "1rem"}}>
                         <CardBody>
-                            <CardTitle>{p.userId !== null ? p.userId : "User"}: {p.title !== null ? p.title : "-"}</CardTitle>
-                            <CardSubtitle>Date: {p.date !== null ? p.date : "-"}</CardSubtitle>
-                            <CardText>{p.message !== null ? p.message : "-"}</CardText>
+                            <CardTitle>{p.userId !== null ? p.userId : "User"}: {p.title !== null ? p.title : "No title"}</CardTitle>
+                            <CardSubtitle>Date: {p.date !== null ? readableTime(p.date, true) : "No date"}</CardSubtitle>
+                            <CardText>{p.message !== null ? p.message : "No message"}</CardText>
                         </CardBody>
                     </Card>
                 )): <p>No posts found</p>}

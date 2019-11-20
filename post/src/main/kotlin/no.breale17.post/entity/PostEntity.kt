@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty
 class PostEntity (
         var title: String? = null,
         var message: String? = null,
-        var date: LocalDate? = null,
+        var date: Long? = null,
         @get:NotEmpty
         var userId: String? = null,
         @get:Id

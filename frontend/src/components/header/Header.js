@@ -19,7 +19,6 @@ export default class Header extends React.Component {
     logout = async () => {
         console.log("LOGOUT CLICKED");
         await requestHandler.logout().then(r =>  {
-            this.props.onUserChange(null);
             this.props.history.push('/')
         }).catch(e =>  this.props.history.push('/'))
     };
@@ -58,7 +57,7 @@ export default class Header extends React.Component {
                                         </Button>
                                     </NavItem>
                                     <NavItem>
-                                        <Button onClick={()=>this.logout} color="primary">
+                                        <Button onClick={()=>this.logout()} color="primary">
                                             Logout
                                         </Button>
                                     </NavItem>
