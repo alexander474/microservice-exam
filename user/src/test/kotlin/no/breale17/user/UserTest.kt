@@ -54,9 +54,86 @@ class UserTest{
                 .body("data.list.size()", CoreMatchers.equalTo(n))
     }
 
+    @Test
+    fun testUserCount(){
+        checkSize(0)
+        RestAssured.given().get("/userCount")
+                .then()
+                .statusCode(200)
+                .body("data", CoreMatchers.equalTo(0))
+
+        val id = "foo"
+        val dto = UserDto(id, "A", "B", "C", "a@a.com")
+        RestAssured.given().auth().basic(id,"123")
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .put("/$id")
+                .then()
+                .statusCode(201)
+
+        checkSize(1)
+        RestAssured.given().get("/userCount")
+                .then()
+                .statusCode(200)
+                .body("data", CoreMatchers.equalTo(1))
+    }
+
 
     @Test
     fun testCreate(){
+        checkSize(0)
+
+        val id = "foo"
+        val dto = UserDto(id, "A", "B", "C", "a@a.com")
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .put("/$id")
+                .then()
+                .statusCode(201)
+
+        checkSize(1)
+    }
+
+    @Test
+    fun testGetAllIllegalOffsetAndLimit(){
+        checkSize(0)
+
+        val id = "foo"
+        val dto = UserDto(id, "A", "B", "C", "a@a.com")
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .put("/$id")
+                .then()
+                .statusCode(201)
+
+        checkSize(1)
+
+        RestAssured.given().auth().basic("admin","admin")
+                .accept(ContentType.JSON)
+                .queryParam("offset", 10_000)
+                .queryParam("limit", 10_000)
+                .get()
+                .then()
+                .statusCode(400)
+    }
+
+    @Test
+    fun testUserDoesNotExist(){
+        val id = "foo"
+
+        RestAssured.given().auth().basic(id,"123")
+                .accept(ContentType.JSON)
+                .get("/$id")
+                .then()
+                .statusCode(404)
+    }
+
+    @Test
+    fun testReplaceWithNotMatchinId(){
 
         checkSize(0)
 
@@ -72,6 +149,15 @@ class UserTest{
                 .statusCode(201)
 
         checkSize(1)
+
+        val dto2 = UserDto("notMatching", "A", "B", "C", "a@a.com")
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType(ContentType.JSON)
+                .body(dto2)
+                .put("/$id")
+                .then()
+                .statusCode(409)
     }
 
 

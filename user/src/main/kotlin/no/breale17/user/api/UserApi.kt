@@ -49,7 +49,7 @@ class UserApi {
 
         if (offset < 0 || limit < 1 || limit > maxPageLimit || (offset+limit) > maxFromDb || offset > onDbWithId) {
             return ResponseEntity.status(400).body(
-                    WrappedResponse<PageDto<UserDto>>(code = 400)
+                    WrappedResponse<PageDto<UserDto>>(message="Illegal offset or limit" ,code = 400)
                             .validated())
         }
 

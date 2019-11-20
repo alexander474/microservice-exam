@@ -195,4 +195,22 @@ class SecurityTest {
 
         checkAuthenticatedCookie(auth, 200)
     }
+
+    @Test
+    fun testSignUpWithExistingUser(){
+        val name = "foo"
+        val pwd = "bar"
+
+        checkAuthenticatedCookie("invalid cookie", 401)
+
+        val cookie = registerUser(name, pwd)
+
+        checkAuthenticatedCookie(cookie, 200)
+
+        RestAssured.given().contentType(ContentType.JSON)
+                .body(AuthenticationDto(name, pwd))
+                .post("/signUp")
+                .then()
+                .statusCode(400)
+    }
 }
