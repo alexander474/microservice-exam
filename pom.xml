@@ -42,6 +42,7 @@
         <module>authentication</module>
         <module>user</module>
         <module>post</module>
+        <module>e2e-test</module>
     </modules>
 
     <parent>
@@ -272,6 +273,15 @@
             <version>${version.faker}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <!-- for code coverage -->
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.core</artifactId>
+            <version>${version.jacoco}</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <dependency>
             <!-- To support JUnit 5  -->
