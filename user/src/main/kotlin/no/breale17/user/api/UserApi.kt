@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
 import no.breale17.dto.FriendRequestDto
 import no.breale17.dto.FriendRequestStatus
+import no.breale17.dto.UserBasicDto
 import no.breale17.dto.UserDto
 import no.breale17.user.service.UserService
 import no.utils.pagination.PageDto
@@ -56,6 +57,43 @@ class UserApi {
         var builder = UriComponentsBuilder
                 .fromPath("/users")
         val users = userServce.getAll(offset, limit, onDbWithId, maxPageLimit, builder)
+        return ResponseEntity.ok(
+                WrappedResponse(
+                        code = 200,
+                        data = users
+                ).validated()
+        )
+    }
+
+    @ApiOperation("*")
+    @GetMapping(path = ["/basic"],produces = [(MediaType.APPLICATION_JSON_VALUE)])
+    fun getAllBasic(            @RequestParam("ignoreSession", required = false)
+                           ignoreSession: Boolean?,
+
+                           @CookieValue("SESSION", required = false)
+                           cookie: String?,
+
+                           @ApiParam("Offset in the list of news")
+                           @RequestParam("offset", defaultValue = "0")
+                           offset: Int,
+
+                           @ApiParam("Limit of news in a single retrieved page")
+                           @RequestParam("limit", defaultValue = "10")
+                           limit: Int,
+                           user: Principal): ResponseEntity<WrappedResponse<PageDto<UserBasicDto>>>{
+        val maxPageLimit = 50
+        val maxFromDb = 1000
+        val onDbWithId = userServce.getNumberOfUsers()
+
+        if (offset < 0 || limit < 1 || limit > maxPageLimit || (offset+limit) > maxFromDb || offset > onDbWithId) {
+            return ResponseEntity.status(400).body(
+                    WrappedResponse<PageDto<UserBasicDto>>(message="Illegal offset or limit" ,code = 400)
+                            .validated())
+        }
+
+        var builder = UriComponentsBuilder
+                .fromPath("/users")
+        val users = userServce.getAllUsersBasicInfo(offset, limit, onDbWithId, maxPageLimit, builder)
         return ResponseEntity.ok(
                 WrappedResponse(
                         code = 200,

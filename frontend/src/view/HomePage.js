@@ -4,6 +4,7 @@ import {Col, Row} from "reactstrap";
 import UserCount from "../components/UserCount/UserCount";
 import Post from "../components/post/Post";
 import PostForm from "../components/post/PostForm";
+import FriendRequest from "../components/friendRequest/FriendRequest";
 
 export class HomePage extends React.Component {
     constructor(props) {
@@ -11,7 +12,7 @@ export class HomePage extends React.Component {
     }
 
     renderLoggedIn = () => {
-        const {isLoggedIn, isAdmin, user, userInformation} = this.props;
+        const {isLoggedIn, isAdmin, user, userInformation, getUserInformation} = this.props;
         let name = "";
         let email = "";
         if(userInformation !== null && userInformation !== undefined) {
@@ -22,28 +23,41 @@ export class HomePage extends React.Component {
         }
         return(
             <div>
-                <p>Currently logged in as: {name} - {email}</p>
-                <br/>
-                <PostForm/>
-                <br/>
-                <h1>Feed:</h1>
-                <Post/>
+                <Row>
+                    <Col md={12}>
+                        <p>Currently logged in as: {name} - {email}</p>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={6}>
+                        <PostForm/>
+                        <br/>
+                        <h1>Feed:</h1>
+                        <Post/>
+                    </Col>
+                    <Col md={6}>
+                        <FriendRequest getUserInformation={getUserInformation} userInformation={userInformation} user={user}/>
+                    </Col>
+                </Row>
             </div>
         )
     };
 
     renderNotLoggedIn = () => {
-
         return(
             <div>
-                You are not logged in
+                <Row>
+                    <Col md={12}>
+                        <p>You are not logged in and can therefore not se any posts</p>
+                    </Col>
+                </Row>
             </div>
-        )
+        );
     };
 
 
     render() {
-        const {isLoggedIn, isAdmin, user, userInformation} = this.props;
+        const {isLoggedIn, isAdmin, user, userInformation, updateAuthUse} = this.props;
         return (
             <div >
                 <Row >

@@ -6,7 +6,7 @@ export default class UserCount extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            count: 0
+            count: null
         };
     }
 
@@ -25,7 +25,7 @@ export default class UserCount extends React.Component {
     render() {
         return (
             <div>
-                <Badge onClick={()=>this.userCount()} color="secondary">Users: {this.state.count}</Badge>
+                <Badge onClick={()=>this.userCount()} color="secondary">Users: {this.state.count !== null ? this.state.count : "-"}</Badge>
             </div>
         );
     }

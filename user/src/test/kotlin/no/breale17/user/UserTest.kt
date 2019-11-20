@@ -37,6 +37,23 @@ class UserTest{
         userRepository.deleteAll()
     }
 
+    private fun createUser(id: String, password: String, name: String, middleName: String, surname: String, email: String): UserDto{
+        val currentSize = getSize()
+        checkSize(currentSize.toInt())
+
+        val dto = UserDto(id, name, middleName, surname, email)
+
+        RestAssured.given().auth().basic(id,password)
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .put("/$id")
+                .then()
+                .statusCode(201)
+
+        checkSize((currentSize.toInt())+1)
+        return dto
+    }
+
 
     @Test
     fun testNeedAdmin(){
@@ -55,6 +72,15 @@ class UserTest{
                 .then()
                 .statusCode(200)
                 .body("data.list.size()", CoreMatchers.equalTo(n))
+    }
+
+    private fun getSize(): Long{
+        return RestAssured.given().auth().basic("admin","admin")
+                .accept(ContentType.JSON)
+                .get()
+                .then()
+                .statusCode(200)
+                .extract().path("data.list.size()")
     }
 
     @Test
@@ -100,27 +126,43 @@ class UserTest{
     }
 
     @Test
+    fun testGetUserBasicInfo(){
+        val id = "foo"
+        val id2 = "bar"
+        val id3 = "admin"
+        val password = "123"
+
+        RestAssured.given().auth().basic(id,"123")
+                .accept(ContentType.JSON)
+                .get("/basic")
+                .then()
+                .statusCode(200)
+                .body("data.list.size()", CoreMatchers.equalTo(0))
+
+        createUser(id, password, "A", "B", "C", "a@a.com")
+        createUser(id2, password, "A2", "B2", "C2", "a2@a.com")
+        createUser(id3, "admin", "A2", "B2", "C2", "a2@a.com")
+
+        RestAssured.given().auth().basic(id,"123")
+                .accept(ContentType.JSON)
+                .get("/basic")
+                .then()
+                .statusCode(200)
+                .body("data.list.size()", CoreMatchers.equalTo(3))
+    }
+
+    @Test
     fun testAddFriend(){
         val id = "foo"
-        val dto = UserDto(id, "A", "B", "C", "a@a.com")
         val id2 = "bar"
-        val dto2 = UserDto(id2, "A2", "B2", "C2", "a2@a.com")
+        val password = "123"
         val friendRequest = FriendRequestDto(id, id2)
         val friendRequestResponse = FriendRequestDto(id, id2, FriendRequestStatus.APPROVED)
 
-        RestAssured.given().auth().basic(id,"123")
-                .contentType(ContentType.JSON)
-                .body(dto)
-                .put("/$id")
-                .then()
-                .statusCode(201)
+        createUser(id, password, "A", "B", "C", "a@a.com")
+        createUser(id2, password, "A2", "B2", "C2", "a2@a.com")
 
-        RestAssured.given().auth().basic(id2,"123")
-                .contentType(ContentType.JSON)
-                .body(dto2)
-                .put("/$id2")
-                .then()
-                .statusCode(201)
+
 
         //Send friend request from foo
         RestAssured.given().auth().basic(id,"123")
@@ -164,6 +206,7 @@ class UserTest{
                 .then()
                 .statusCode(200)
                 .body("data.friends", Matchers.contains(id2))
+                .body("data.friends.size()", CoreMatchers.equalTo(1))
                 .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
                 .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
 
@@ -174,6 +217,7 @@ class UserTest{
                 .then()
                 .statusCode(200)
                 .body("data.friends", Matchers.contains(id))
+                .body("data.friends.size()", CoreMatchers.equalTo(1))
                 .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
                 .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
 
@@ -182,25 +226,14 @@ class UserTest{
     @Test
     fun testDenyFriendRequest(){
         val id = "foo"
-        val dto = UserDto(id, "A", "B", "C", "a@a.com")
         val id2 = "bar"
-        val dto2 = UserDto(id2, "A2", "B2", "C2", "a2@a.com")
+        val password = "123"
         val friendRequest = FriendRequestDto(id, id2)
         val friendRequestResponse = FriendRequestDto(id, id2, FriendRequestStatus.DENIED)
 
-        RestAssured.given().auth().basic(id,"123")
-                .contentType(ContentType.JSON)
-                .body(dto)
-                .put("/$id")
-                .then()
-                .statusCode(201)
+        createUser(id, password, "A", "B", "C", "a@a.com")
+        createUser(id2, password, "A2", "B2", "C2", "a2@a.com")
 
-        RestAssured.given().auth().basic(id2,"123")
-                .contentType(ContentType.JSON)
-                .body(dto2)
-                .put("/$id2")
-                .then()
-                .statusCode(201)
 
         //Send friend request from foo
         RestAssured.given().auth().basic(id,"123")
@@ -261,19 +294,10 @@ class UserTest{
 
     @Test
     fun testGetAllIllegalOffsetAndLimit(){
-        checkSize(0)
-
         val id = "foo"
-        val dto = UserDto(id, "A", "B", "C", "a@a.com")
+        val password = "123"
 
-        RestAssured.given().auth().basic(id,"123")
-                .contentType(ContentType.JSON)
-                .body(dto)
-                .put("/$id")
-                .then()
-                .statusCode(201)
-
-        checkSize(1)
+        createUser(id, password, "A", "B", "C", "a@a.com")
 
         RestAssured.given().auth().basic("admin","admin")
                 .accept(ContentType.JSON)
@@ -297,21 +321,10 @@ class UserTest{
 
     @Test
     fun testReplaceWithNotMatchinId(){
-
-        checkSize(0)
-
         val id = "foo"
+        val password = "123"
 
-        val dto = UserDto(id, "A", "B", "C", "a@a.com")
-
-        RestAssured.given().auth().basic(id,"123")
-                .contentType(ContentType.JSON)
-                .body(dto)
-                .put("/$id")
-                .then()
-                .statusCode(201)
-
-        checkSize(1)
+        createUser(id, password, "A", "B", "C", "a@a.com")
 
         val dto2 = UserDto("notMatching", "A", "B", "C", "a@a.com")
 
@@ -326,20 +339,11 @@ class UserTest{
 
     @Test
     fun testChangeField(){
-
-        checkSize(0)
-
         val id = "foo"
         val name = "John"
+        val password = "123"
 
-        val dto = UserDto(id, name, "B", "C", "a@a.com")
-
-        RestAssured.given().auth().basic(id,"123")
-                .contentType(ContentType.JSON)
-                .body(dto)
-                .put("/$id")
-                .then()
-                .statusCode(201)
+        val dto = createUser(id, password, name, "B", "C", "a@a.com")
 
         val changed = name + "_foo"
 

@@ -26,6 +26,10 @@ export default class App extends React.Component {
     }
 
     async componentDidMount() {
+        await this.updateAuthUser()
+    }
+
+    updateAuthUser = async () => {
         await requestHandler.getAuthUser().then(res => {
             if(res.status === 200){
                 if(res.data !== null && res.data !== undefined) {
@@ -37,7 +41,7 @@ export default class App extends React.Component {
         }).catch(e => {
             // no authenticated user found
         });
-    }
+    };
 
 
     getUserInformation = async (user) => {
@@ -117,6 +121,8 @@ export default class App extends React.Component {
                                        isAdmin={this.state.isAdmin}
                                        user={this.state.user}
                                        userInformation={this.state.userInformation}
+                                       updateAuthUser={this.updateAuthUser}
+                                       getUserInformation={this.getUserInformation}
                                        {...props}/>}/>
                             <Route exact path="/login"
                                    render={props => <Login
@@ -125,6 +131,7 @@ export default class App extends React.Component {
                                        isAdmin={this.state.isAdmin}
                                        user={this.state.user}
                                        userInformation={this.state.userInformation}
+                                       updateAuthUser={this.updateAuthUser}
                                        {...props}/>}/>
                             <Route exact path="/register/userinformation/:userId"
                                    render={props => <UserInformationForm
@@ -133,6 +140,7 @@ export default class App extends React.Component {
                                        isAdmin={this.state.isAdmin}
                                        user={this.state.user}
                                        userInformation={this.state.userInformation}
+                                       updateAuthUser={this.updateAuthUser}
                                        {...props}/>}/>
                             <Route exact path="/register"
                                    render={props => <Signup
@@ -141,6 +149,7 @@ export default class App extends React.Component {
                                        isAdmin={this.state.isAdmin}
                                        user={this.state.user}
                                        userInformation={this.state.userInformation}
+                                       updateAuthUser={this.updateAuthUser}
                                        {...props}/>}/>
                             <Route component={this.notFound}/>
                         </Switch>

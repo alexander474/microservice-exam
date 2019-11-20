@@ -1,13 +1,16 @@
 package no.breale17.user.service
 
+import no.breale17.dto.UserBasicDto
 import no.breale17.user.converter.UserConverter
 import no.breale17.user.repository.UserRepository
 import no.breale17.dto.UserDto
+import no.breale17.user.converter.UserBasicConverter
 import no.breale17.user.entity.UserEntity
 import no.utils.pagination.PageDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.util.UriComponentsBuilder
 
 @Service
@@ -22,6 +25,11 @@ class UserService {
 
     fun getAll(offset: Int, limit: Int, onDb:Long, maxPageLimit: Int, builder: UriComponentsBuilder): PageDto<UserDto> {
         return UserConverter().transform(userRepository.findAll(), offset, limit, onDb, maxPageLimit, builder)
+    }
+
+
+    fun getAllUsersBasicInfo(offset: Int, limit: Int, onDb:Long, maxPageLimit: Int, builder: UriComponentsBuilder): PageDto<UserBasicDto> {
+        return UserBasicConverter().transform(userRepository.findAll(), offset, limit, onDb, maxPageLimit, builder)
     }
 
     fun getNumberOfUsers(): Long{
@@ -75,6 +83,7 @@ class UserService {
         return valid
     }
 
+    @Transactional
     fun sendRequest(from: String, to: String): Boolean{
         var sent = false
         val userFrom = getById(from)
@@ -93,6 +102,7 @@ class UserService {
         return sent
     }
 
+    @Transactional
     fun removeRequest(from: String, to: String){
         val friendRequestExists = checkIfFriendRequestExists(from,to)
         val userFrom = getById(from)
@@ -109,7 +119,9 @@ class UserService {
         }
     }
 
-    fun addFriend(from: String, to: String){
+    @Transactional
+    fun addFriend(from: String, to: String): Boolean{
+        val added = false
         val friendRequestExists = checkIfFriendRequestExists(from,to)
         val isFriend = checkIfAlreadyFriends(from,to)
         val userFrom = getById(from)
@@ -118,12 +130,14 @@ class UserService {
         if(userFrom !== null && userTo !== null && !isFriend && friendRequestExists){
             val listFrom = userFrom.friends.toMutableList()
             val listTo = userTo.friends.toMutableList()
-            val listRequestFrom = userFrom!!.requestsOut.toMutableList()
-            val listRequestTo = userTo!!.requestsIn.toMutableList()
+            val listRequestFrom = userFrom.requestsOut.toMutableList()
+            val listRequestTo = userTo.requestsIn.toMutableList()
 
-            //alter
+            //remove requests
             listRequestFrom.remove(to)
             listRequestTo.remove(from)
+
+            //add users as friends
             listFrom.add(to)
             listTo.add(from)
 
@@ -137,5 +151,6 @@ class UserService {
             saveUser(userFrom)
             saveUser(userTo)
         }
+        return added
     }
 }

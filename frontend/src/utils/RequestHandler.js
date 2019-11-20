@@ -49,6 +49,12 @@ const getUserInformation = async (userId) => {
     })
 };
 
+const getAllUserBasicInformation = async () => {
+    return await instance.get('/users/basic').then(response => {
+        return response
+    })
+};
+
 const getUserCount = async (userId) => {
     return await instance.get('/users/userCount').then(response => {
         return response
@@ -79,6 +85,39 @@ const logout = async () => {
     })
 };
 
+const sendFriendRequest = async (fromId,toId) => {
+    return await instance.post('/users/friendrequest',
+        {
+            'from': fromId,
+            'to': toId
+        }).then(response => {
+        return response
+    })
+};
+
+const approveFriendRequest = async (fromId,toId) => {
+    return await instance.put('/users/friendrequest',
+        {
+            'from': fromId,
+            'to': toId,
+            'status': "APPROVED"
+        }).then(response => {
+        return response
+    })
+};
+
+const denyFriendRequest = async (fromId,toId) => {
+    return await instance.put('/users/friendrequest',
+        {
+            'from': fromId,
+            'to': toId,
+            'status': "DENIED"
+        }).then(response => {
+        return response
+    })
+};
+
+
 
 export const requestHandler = {
     login,
@@ -89,5 +128,9 @@ export const requestHandler = {
     getUserCount,
     getAllPosts,
     updateUserInformation,
-    createPost
+    createPost,
+    sendFriendRequest,
+    approveFriendRequest,
+    denyFriendRequest,
+    getAllUserBasicInformation
 };
