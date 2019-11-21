@@ -1,5 +1,6 @@
 package no.breale17.user.entity
 
+import org.hibernate.annotations.Fetch
 import javax.persistence.*
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
@@ -28,15 +29,15 @@ class UserEntity (
     @Column(name="email")
     var email: String?,
 
-    @get:ElementCollection
+    @get:ElementCollection(fetch = FetchType.EAGER)
     @Column(name="friends")
     var friends: Set<String>? = setOf(),
 
-    @get:ElementCollection
+    @get:ElementCollection(fetch = FetchType.EAGER)
     @Column(name="requestsIn")
     var requestsIn: Set<String>? = setOf(),
 
-    @get:ElementCollection
+    @get:ElementCollection(fetch = FetchType.EAGER)
     @Column(name="requestsOut")
     var requestsOut: Set<String>? = setOf()
 )

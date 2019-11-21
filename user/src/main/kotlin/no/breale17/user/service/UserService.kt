@@ -12,9 +12,18 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.util.UriComponentsBuilder
+import javax.annotation.PostConstruct
 
 @Service
 class UserService {
+
+    @PostConstruct
+    fun init(){
+        saveUser(UserDto("a", "admin", "admin_middlename", "admin", "admin@admin.admin"))
+        saveUser(UserDto("b", "foo", "user_middlename", "bar", "foo@bar.bar"))
+        sendRequest("a", "b")
+        addFriend("b", "a")
+    }
 
     @Autowired
     lateinit var userRepository: UserRepository

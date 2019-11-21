@@ -39,7 +39,12 @@ open class UserRepositoryImpl : UserRepositoryCustom {
         query.firstResult = offset
         query.maxResults = limit
 
-
+        val result = query.resultList
+        result.forEach{
+            it.friends?.size
+            it.requestsIn?.size
+            it.requestsOut?.size
+        }
         return query.resultList;
     }
 }

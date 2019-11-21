@@ -10,9 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 import java.time.LocalDate
+import javax.annotation.PostConstruct
 
 @Service
 class PostService {
+
+    @PostConstruct
+    fun init(){
+        createPost(PostDto("Admin Post", "This is a post, posted by the admin", "1574351580", "a"),"a")
+        createPost(PostDto("User Post", "This is a post, posted by User: FOO", "1574351580", "b"),"b")
+    }
 
     @Autowired
     private lateinit var postRepository: PostRepository

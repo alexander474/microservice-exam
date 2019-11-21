@@ -5,6 +5,7 @@ import no.breale17.authentication.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import javax.annotation.PostConstruct
 
 @Service
 @Transactional
@@ -13,6 +14,11 @@ class AuthenticationService(
         private val passwordEncoder: PasswordEncoder
 ){
 
+    @PostConstruct
+    fun init(){
+        createUser("a", "a", setOf("USER", "ADMIN"))
+        createUser("b", "b")
+    }
 
     fun createUser(username: String, password: String, roles: Set<String> = setOf()) : Boolean{
 

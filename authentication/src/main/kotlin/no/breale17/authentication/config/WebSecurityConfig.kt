@@ -36,7 +36,6 @@ class WebSecurityConfig(
                 .and()
                 .logout()
                 .logoutUrl("/auth/logout")
-                .logoutSuccessUrl("/")
                 .and()
                 .authorizeRequests()
                 .antMatchers("/auth/user").authenticated()

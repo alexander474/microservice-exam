@@ -1,9 +1,6 @@
 package no.breale17.authentication.entity
 
-import javax.persistence.ElementCollection
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
@@ -18,7 +15,7 @@ class UserEntity(
         @get:NotBlank
         var password: String?,
 
-        @get:ElementCollection
+        @get:ElementCollection(fetch = FetchType.EAGER)
         @get:NotNull
         var roles: Set<String>? = setOf(),
 
