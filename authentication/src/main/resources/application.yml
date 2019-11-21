@@ -14,14 +14,8 @@ spring:
   jpa:
     database: "postgresql"
     hibernate:
-      # We should rather use Flyway. But for simplicity, here rely
-      # on Hibernate to handle the schema (which is usually not a good idea).
-      ddl-auto: "update"
-    properties:
-      hibernate:
-        jdbc:
-          lob:  # Disables error-like log in console:
-            non_contextual_creation: true
+      ddl-auto: create-drop
+    show-sql: true
 
 
 eureka:
