@@ -14,7 +14,7 @@ spring:
 
       routes:
         - id: post
-          uri: http://post:8080
+          uri: lb://post:8080
           predicates:
             - Path=/api/v1/posts/**
           filters:

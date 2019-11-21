@@ -126,6 +126,30 @@ class UserTest{
     }
 
     @Test
+    fun testDeleteUser(){
+        checkSize(0)
+
+        val id = "foo"
+        val dto = UserDto(id, "A", "B", "C", "a@a.com")
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .put("/$id")
+                .then()
+                .statusCode(201)
+
+        checkSize(1)
+
+        RestAssured.given().auth().basic(id,"123")
+                .delete("/$id")
+                .then()
+                .statusCode(204)
+
+        checkSize(0)
+    }
+
+    @Test
     fun testGetUserBasicInfo(){
         val id = "foo"
         val id2 = "bar"
@@ -406,4 +430,173 @@ class UserTest{
 
         checkSize(2)
     }
+
+    @Test
+    fun testJsonMergePatch(){
+        val id = "foo"
+        val password = "123"
+
+        createUser(id, password, "A", "B", "C", "a@a.com")
+
+        val dto2 = """
+            {
+                "name": "newName",
+                "middleName": "newMiddleName",
+                "surname": "NewSurname",
+                "email": "newMail@newMail.rand"
+            }
+        """.trimIndent()
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType("application/merge-patch+json")
+                .body(dto2)
+                .patch("/$id")
+                .then()
+                .statusCode(204)
+    }
+
+    @Test
+    fun testJsonMergePatchIllegalName(){
+        val id = "foo"
+        val password = "123"
+
+        createUser(id, password, "A", "B", "C", "a@a.com")
+
+        val dto2 = """
+            {
+                "name": 1,
+                "middleName": "newMiddleName",
+                "surname": "NewSurname",
+                "email": "newMail@newMail.rand"
+            }
+        """.trimIndent()
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType("application/merge-patch+json")
+                .body(dto2)
+                .patch("/$id")
+                .then()
+                .statusCode(400)
+    }
+
+    @Test
+    fun testJsonMergePatchIllegalMiddleName(){
+        val id = "foo"
+        val password = "123"
+
+        createUser(id, password, "A", "B", "C", "a@a.com")
+
+        val dto2 = """
+            {
+                "name": newName,
+                "middleName": "-1,
+                "surname": "NewSurname",
+                "email": "newMail@newMail.rand"
+            }
+        """.trimIndent()
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType("application/merge-patch+json")
+                .body(dto2)
+                .patch("/$id")
+                .then()
+                .statusCode(400)
+    }
+    @Test
+    fun testJsonMergePatchIllegalSurname(){
+        val id = "foo"
+        val password = "123"
+
+        createUser(id, password, "A", "B", "C", "a@a.com")
+
+        val dto2 = """
+            {
+                "name": newName,
+                "middleName": "newMiddleName",
+                "surname": "-1",
+                "email": "newMail@newMail.rand"
+            }
+        """.trimIndent()
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType("application/merge-patch+json")
+                .body(dto2)
+                .patch("/$id")
+                .then()
+                .statusCode(400)
+    }
+    @Test
+    fun testJsonMergePatchIllegalEmail(){
+        val id = "foo"
+        val password = "123"
+
+        createUser(id, password, "A", "B", "C", "a@a.com")
+
+        val dto2 = """
+            {
+                "name": newName,
+                "middleName": "newMiddleName",
+                "surname": "NewSurname",
+                "email": "-1"
+            }
+        """.trimIndent()
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType("application/merge-patch+json")
+                .body(dto2)
+                .patch("/$id")
+                .then()
+                .statusCode(400)
+    }
+
+    @Test
+    fun testJsonMergePatchSendingId(){
+        val id = "foo"
+        val password = "123"
+
+        createUser(id, password, "A", "B", "C", "a@a.com")
+
+        val dto2 = """
+            {
+                "userId": "RandomNewId",
+                "name": "newName",
+                "middleName": "newMiddleName",
+                "surname": "NewSurname",
+                "email": "newMail@newMail.rand"
+            }
+        """.trimIndent()
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType("application/merge-patch+json")
+                .body(dto2)
+                .patch("/$id")
+                .then()
+                .statusCode(409)
+    }
+
+    @Test
+    fun testJsonMergePatchSendingFriends(){
+        val id = "foo"
+        val password = "123"
+
+        createUser(id, password, "A", "B", "C", "a@a.com")
+
+        val dto2 = """
+            {
+                "name": "newName",
+                "middleName": "newMiddleName",
+                "surname": "NewSurname",
+                "email": "newMail@newMail.rand",
+                "friends": []
+            }
+        """.trimIndent()
+
+        RestAssured.given().auth().basic(id,"123")
+                .contentType("application/merge-patch+json")
+                .body(dto2)
+                .patch("/$id")
+                .then()
+                .statusCode(409)
+    }
+
 }

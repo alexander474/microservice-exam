@@ -1,5 +1,7 @@
 package no.breale17.user.api
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
@@ -112,6 +114,7 @@ class UserApi {
     }
 
 
+
     @ApiOperation("*")
     @GetMapping(path = ["/{id}"], produces = [(MediaType.APPLICATION_JSON_VALUE)])
     fun getById(
@@ -134,6 +137,21 @@ class UserApi {
                 WrappedResponse(
                         code = 200,
                         data = user
+                ).validated()
+        )
+    }
+
+    @ApiOperation("*")
+    @DeleteMapping(path = ["/{id}"], produces = [(MediaType.APPLICATION_JSON_VALUE)])
+    fun deleteById(
+            @ApiParam("Unique user id")
+            @PathVariable("id") id: String
+    ): ResponseEntity<WrappedResponse<Void>>{
+        userServce.deleteUser(id)
+
+        return ResponseEntity.status(204).body(
+                WrappedResponse<Void>(
+                        code = 204
                 ).validated()
         )
     }
@@ -168,6 +186,133 @@ class UserApi {
                         code = code,
                         message = if(code in 200..299) "SUCCESS" else "SOMETHING WENT WRONG"
                 ).validated())
+    }
+
+    @ApiOperation("Modify the user using JSON Merge Patch")
+    @PatchMapping(path = ["/{id}"],
+            consumes = ["application/merge-patch+json"])
+    fun mergePatch(@ApiParam("The unique id of the user")
+                   @PathVariable("id")
+                   id: String,
+                   @ApiParam("The partial patch")
+                   @RequestBody
+                   jsonPatch: String): ResponseEntity<WrappedResponse<Void>>{
+        val dto = userServce.getById(id)
+                ?: return ResponseEntity.status(409).body(
+                        WrappedResponse<Void>(
+                                code = 409,
+                                message = "Could not find user"
+                        ).validated())
+        val jackson = ObjectMapper()
+
+        val jsonNode: JsonNode
+        try {
+            jsonNode = jackson.readValue(jsonPatch, JsonNode::class.java)
+        } catch (e: Exception) {
+            return ResponseEntity.status(400).body(
+                    WrappedResponse<Void>(
+                            code = 409,
+                            message = "Invalid JSON input"
+                    ).validated())
+        }
+
+        if (jsonNode.has("userId")) {
+            return ResponseEntity.status(409).body(
+                    WrappedResponse<Void>(
+                            code = 409,
+                            message = "Id cannot be modified"
+                    ).validated())
+        }
+        if (jsonNode.has("friends")) {
+            return ResponseEntity.status(409).body(
+                    WrappedResponse<Void>(
+                            code = 409,
+                            message = "Friends cannot be modified"
+                    ).validated())
+        }
+        if (jsonNode.has("requestIn")) {
+            return ResponseEntity.status(409).body(
+                    WrappedResponse<Void>(
+                            code = 409,
+                            message = "RequestIn cannot be modified"
+                    ).validated())
+        }
+        if (jsonNode.has("requestOut")) {
+            return ResponseEntity.status(409).body(
+                    WrappedResponse<Void>(
+                            code = 409,
+                            message = "RequestOut cannot be modified"
+                    ).validated())
+        }
+
+        var name = dto.name
+        var middleName = dto.middleName
+        var surname= dto.surname
+        var email = dto.email
+
+        if (jsonNode.has("name")) {
+            val nameNode = jsonNode.get("name")
+            if (nameNode.isNull) {
+                name = null
+            } else if (nameNode.isTextual) {
+                name = nameNode.asText()
+            } else {
+                return ResponseEntity.status(400).body(
+                        WrappedResponse<Void>(
+                                code = 400,
+                                message = "Invalid JSON. Non-string name"
+                        ).validated())
+            }
+        }
+        if (jsonNode.has("mmiddleName")) {
+            val middleNameNode = jsonNode.get("middleName")
+            if (middleNameNode.isNull) {
+                middleName = null
+            } else if (middleNameNode.isTextual) {
+                middleName = middleNameNode.asText()
+            } else {
+                return ResponseEntity.status(400).body(
+                        WrappedResponse<Void>(
+                                code = 400,
+                                message = "Invalid JSON. Non-string name"
+                        ).validated())
+            }
+        }
+        if (jsonNode.has("surname")) {
+            val surnameNode = jsonNode.get("surname")
+            if (surnameNode.isNull) {
+                surname = null
+            } else if (surnameNode.isTextual) {
+                surname = surnameNode.asText()
+            } else {
+                return ResponseEntity.status(400).body(
+                        WrappedResponse<Void>(
+                                code = 400,
+                                message = "Invalid JSON. Non-string name"
+                        ).validated())
+            }
+        }
+        if (jsonNode.has("email")) {
+            val emailNode = jsonNode.get("email")
+            if (emailNode.isNull) {
+                email = null
+            } else if (emailNode.isTextual) {
+                email = emailNode.asText()
+            } else {
+                return ResponseEntity.status(400).body(
+                        WrappedResponse<Void>(
+                                code = 400,
+                                message = "Invalid JSON. Non-string name"
+                        ).validated())
+            }
+        }
+        dto.name = name
+        dto.middleName = middleName
+        dto.surname = surname
+        dto.email = email
+        userServce.saveUser(id, dto)
+
+        return ResponseEntity.status(204).build()
     }
 
     @ApiOperation("Create a friendrequest")

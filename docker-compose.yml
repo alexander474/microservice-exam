@@ -45,7 +45,7 @@ services:
       - redis
       - gateway
       - authentication-db
-
+  ### USER ####
   user:
     build:
       context: ./user
@@ -63,12 +63,20 @@ services:
     depends_on:
       - gateway
 
-  post:
+  ### POST ####
+  post1:
     build:
       context: ./post
       dockerfile: Dockerfile
-    environment:
-      - TSDES_SERVICE_ID=A
+    depends_on:
+      - gateway
+      - post-db
+      - redis
+
+  post2:
+    build:
+      context: ./post
+      dockerfile: Dockerfile
     depends_on:
       - gateway
       - post-db

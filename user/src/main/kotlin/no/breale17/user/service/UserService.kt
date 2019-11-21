@@ -51,6 +51,10 @@ class UserService {
         return UserConverter().transform(userRepository.save(userEntity))
     }
 
+    fun deleteUser(userId: String){
+        userRepository.deleteById(userId)
+    }
+
     fun checkIfFriendRequestExists(from: String, to: String): Boolean{
         var valid = false
         val userFrom = getById(from)

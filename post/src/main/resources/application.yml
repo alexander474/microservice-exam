@@ -32,3 +32,8 @@ eureka:
       enabled: true
     serviceUrl:
       defaultZone: http://eureka:8761/eureka/
+
+post:
+  ribbon:
+    eureka:
+      enabled: true
