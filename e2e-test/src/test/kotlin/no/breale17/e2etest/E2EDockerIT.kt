@@ -29,7 +29,7 @@ class E2EDockerIT {
         val env = KDockerComposeContainer(File("../docker-compose.yml"))
                 .withLocalCompose(true)
         //if needed for debugging
-        //.withLogConsumer("user-service") {System.out.println("[DOCKER] " + it.utf8String)}
+        //.withLogConsumer("post") {System.out.println("[DOCKER] " + it.utf8String)}
 
         private var counter = System.currentTimeMillis()
 

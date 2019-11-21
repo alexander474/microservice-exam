@@ -1,6 +1,5 @@
 package no.breale17.post.entity
 
-import java.time.LocalDate
 import javax.persistence.*
 import javax.validation.constraints.NotEmpty
 

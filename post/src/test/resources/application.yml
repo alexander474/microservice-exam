@@ -14,7 +14,5 @@ spring:
   jpa:
     database: "h2"
     hibernate:
-      ddl-auto: "create-drop"
+      ddl-auto: create-drop
     show-sql: true
-  flyway:
-    enabled: false

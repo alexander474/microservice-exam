@@ -1,5 +1,16 @@
 # microservice-exam
 
+#### Swagger DOC
+Run application from test folder and go to endpoint: [swagger-ui](http://localhost:8080/swagger-ui.html#/)
+You will be asked for username and password and by default this is:
+- username = admin
+- password = admin
+
+#### Frontend
+Somethimes a site reload is nessesary to get "fresh" information. This is because my main focus was on the backend and not frontend.
+
+I choose to only have one feed in the frontend to display the posts belonging to the logged in user and the posts belonging to the friends.
+
 
 
 #### E
@@ -13,7 +24,7 @@
 - [x] Add enough tests (unit or integration, it is up to you) such that, when they are run from IntelliJ, they MUST achieve AT LEAST a 70% code coverage.
 - [x] If the service communicates with another REST API, you need to use WireMock in the integration tests to mock it.
 - [x] You MUST provide a LocalApplicationRunner in the test folder which is able to run the REST AP independently from the whole microservice. If such REST API depends on external services (e.g., Eureka), those communications can be deactivated or mocked out (or simply live with the fact that some, but not all, endpoints will not work). It is ESSENTIAL that an examiner MUST be able to start such class with simply a right-click on an IDE (e.g., IntelliJ), and then see the Swagger documentation when opening http://localhost:8080/swagger-ui.html in a browser. In “production” mode, the API MUST be configured to connect to a PostgreSQL database. During testing, you can use an embedded database (e.g., H2), and/or start the actual database with Docker.
-- [ ] You MUST use Flyway for migration handling (e.g., for the creation of the database schema).
+- [x] You MUST use Flyway for migration handling (e.g., for the creation of the database schema).
 - [x] Configure Maven to build a self-executable uber/fat jar for the service.
 - [x] Write a Docker file for the service.
 
@@ -31,7 +42,7 @@
 
 #### C
 - [x] You MUST provide a frontend for your application. You can choose whatever framework and language you want, although React is the recommended one.
-- [ ] You need to make sure that all the major features in your application are executable from the frontend.
+- [x] You need to make sure that all the major features in your application are executable from the frontend.
 - [x] Note: there is no requirement on the design of the pages. However, a bit of CSS to make the pages look a bit nicer will be appreciated and positively evaluated.
 
 - [ ] In the GUI, should be possible to...
@@ -39,7 +50,7 @@
 - [x] ... register a new user
 - [x] ... visualize the current user details
 - [x] ... create a new timeline message for the current user
-- [ ] ... display all timeline messages of a user, sorted by time
+- [x] ... display all timeline messages of a user, sorted by time
 - [ ] ... create/accept friendship requests
 
 #### B

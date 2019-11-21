@@ -36,16 +36,19 @@ class UserService {
         return userRepository.numberOfUsers()
     }
 
+    @Transactional
     fun getById(id: String): UserDto?{
         val entity = userRepository.findById(id).orElse(null) ?: return null
         return UserConverter().transform(entity)
     }
 
+    @Transactional
     fun saveUser(userDto: UserDto): UserDto?{
         val userEntity = UserEntity(userDto.userId,userDto.name,userDto.middleName,userDto.surname, userDto.email, userDto.friends.toSet(), userDto.requestsIn.toSet(), userDto.requestsOut.toSet())
         return UserConverter().transform(userRepository.save(userEntity))
     }
 
+    @Transactional
     fun saveUser(userId: String,userDto: UserDto): UserDto?{
         val userEntity = UserEntity(userId,userDto.name,userDto.middleName,userDto.surname, userDto.email, userDto.friends.toSet(), userDto.requestsIn.toSet(), userDto.requestsOut.toSet())
         return UserConverter().transform(userRepository.save(userEntity))
@@ -55,6 +58,7 @@ class UserService {
         userRepository.deleteById(userId)
     }
 
+    @Transactional
     fun checkIfFriendRequestExists(from: String, to: String): Boolean{
         var valid = false
         val userFrom = getById(from)
@@ -71,6 +75,7 @@ class UserService {
         return valid
     }
 
+    @Transactional
     fun checkIfAlreadyFriends(from: String,to: String): Boolean{
         var valid = false
         val userFrom = getById(from)

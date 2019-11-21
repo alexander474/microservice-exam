@@ -166,6 +166,35 @@ class SecurityTest {
         checkAuthenticatedCookie(login, 200)
     }
 
+    @Test
+    fun testLogout(){
+        val name = "foo"
+        val pwd = "bar"
+
+        checkAuthenticatedCookie("invalid cookie", 401)
+
+        val cookie = registerUser(name, pwd)
+
+        RestAssured.given().get("/user")
+                .then()
+                .statusCode(401)
+
+        RestAssured.given().cookie("SESSION", cookie)
+                .get("/user")
+                .then()
+                .statusCode(200)
+                .body("data.name", CoreMatchers.equalTo(name))
+                .body("data.roles", Matchers.contains("ROLE_USER"))
+
+        RestAssured.given().cookie("SESSION", cookie)
+                .post("/logout")
+
+        RestAssured.given().cookie("SESSION", cookie)
+                .get("/user")
+                .then()
+                .statusCode(401)
+    }
+
 
 
     @Test
