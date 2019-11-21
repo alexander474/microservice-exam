@@ -4,6 +4,7 @@ import io.restassured.RestAssured
 import io.restassured.http.ContentType
 import no.breale17.dto.PostDto
 import org.hamcrest.CoreMatchers
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class PostApiTest : TestBase(){
@@ -11,7 +12,7 @@ class PostApiTest : TestBase(){
     @Test
     fun testNotAuthenticated(){
 
-        val res = getAMockedJsonResponse("a", "a", "a", "a", "a@a.com", "")
+        val res = getAMockedJsonResponse("a", "a", "a", "a", "a@a.com", "", "", "")
 
         stubJsonResponse(res,"a")
 
@@ -42,20 +43,40 @@ class PostApiTest : TestBase(){
     @Test
     fun testCreatePost() {
         val id = "foo"
+        val password = "123"
         val title = "TestMovie"
         val message = "TestDescription"
         val allPosts = getAllPosts()
 
-        val location = RestAssured.given().auth().basic(id, "123").contentType(ContentType.JSON)
-                .body(PostDto(title, message, initTestDate.toString()))
-                .post()
-                .then()
-                .statusCode(201)
-                .extract()
-                .header("location")
-
+        val location = createPost(id, password, title, message)
 
         RestAssured.given().auth().basic(id, "123").accept(ContentType.JSON)
+                .basePath("")
+                .get(location)
+                .then()
+                .statusCode(200)
+                .body("data.title", CoreMatchers.equalTo(title))
+                .body("data.message", CoreMatchers.equalTo(message))
+                .body("data.userId", CoreMatchers.equalTo(id))
+
+        RestAssured.given().auth().basic(id, "123").accept(ContentType.JSON)
+                .get()
+                .then()
+                .statusCode(200)
+                .body("data.list.size()", CoreMatchers.equalTo(allPosts!!.size + 1))
+    }
+
+    @Test
+    fun testSeeFriendsPost() {
+        val id = "foo"
+        val password = "123"
+        val title = "TestMovie"
+        val message = "TestDescription"
+        val allPosts = getAllPosts()
+
+        val location = createPost("bar", password, title, message)
+
+        RestAssured.given().auth().basic("bar", "123").accept(ContentType.JSON)
                 .basePath("")
                 .get(location)
                 .then()

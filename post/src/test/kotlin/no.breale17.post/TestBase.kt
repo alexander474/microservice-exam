@@ -68,7 +68,7 @@ abstract class TestBase {
             deleteAll()
         }
         val id = "foo"
-        val res = getAMockedJsonResponse(id,"a","a","a","a@a.com","")
+        val res = getAMockedJsonResponse(id,"a","a","a","a@a.com","", "", "")
         stubJsonResponse(res,id)
 
         RestAssured.given().auth().basic(id, "123").get().then()
@@ -79,7 +79,7 @@ abstract class TestBase {
 
     fun getAllPosts(): MutableList<PostDto>? {
         val id = "foo"
-        val res = getAMockedJsonResponse(id,"a","a","a","a@a.com","")
+        val res = getAMockedJsonResponse(id,"a","a","a","a@a.com","bar", "", "")
         stubJsonResponse(res,id)
         return RestAssured.given().auth().basic(id, "123").accept(ContentType.JSON)
                 .get()
@@ -90,8 +90,18 @@ abstract class TestBase {
                 .getList("data.list", PostDto::class.java)
     }
 
+    fun createPost(id: String, password: String, title: String, message: String): String{
+        return RestAssured.given().auth().basic(id, password).contentType(ContentType.JSON)
+                .body(PostDto(title, message, initTestDate.toString()))
+                .post()
+                .then()
+                .statusCode(201)
+                .extract()
+                .header("location")
+    }
 
-    fun getAMockedJsonResponse(userId: String, name: String, middlename: String, surname: String, email: String, friends: String): String {
+
+    fun getAMockedJsonResponse(userId: String, name: String, middlename: String, surname: String, email: String, friends: String, requestsIn: String, requestsOut: String): String {
         return """
         {
             "userId": "$userId",
@@ -99,7 +109,9 @@ abstract class TestBase {
             "middlename":"$middlename", 
             "surname": "$surname",
             "email": "$email",
-            "friends": [$friends]
+            "friends": [$friends],
+            "requestsIn": [$requestsIn],
+            "requestsOut": [$requestsOut]
         }
         """
     }

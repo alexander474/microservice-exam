@@ -1,5 +1,15 @@
 # microservice-exam
 
+#### How to run?
+1. mvn clean package
+2. docker-compose up --build
+3. frontend will be accessible from [localhost:80](http://localhost/)
+
+To run only one microservice: Run local application runner in the test folders
+Then access either the frontend or swagger doc
+[localhost:8080](http://localhost:8080/) - [swagger-ui](http://localhost:8080/swagger-ui.html#/)
+
+
 #### Swagger DOC
 Run application from test folder and go to endpoint: [swagger-ui](http://localhost:8080/swagger-ui.html#/)
 You will be asked for username and password and by default this is:
@@ -7,11 +17,18 @@ You will be asked for username and password and by default this is:
 - password = admin
 
 #### Frontend
-Somethimes a site reload is nessesary to get "fresh" information. This is because my main focus was on the backend and not frontend.
+Sometimes a site reload is nessesary to get "fresh" information. This is because my main focus was on the backend and not frontend.
 
 I choose to only have one feed in the frontend to display the posts belonging to the logged in user and the posts belonging to the friends.
 
+#### Coverage
+ - Authentication: -%
+ - User: -%
+ - Post: -%
 
+plus E2E-tests
+
+## Tasks
 
 #### E
 - [x] Write a new REST API using SpringBoot and Kotlin.
@@ -31,7 +48,7 @@ I choose to only have one feed in the frontend to display the posts belonging to
 - [x] REST API to handle user details: e.g., name, surname and email address.
 - [x] Need to handle “friendship” requests: eg, a user asking another for friendship, and this other deciding whether to accept it or not
 - [x] Need to be able to create new messages on the “timeline” of a user
-- [ ] When the API starts, it must have some already existing data
+- [x] When the API starts, it must have some already existing data
 
 #### D
 - [x] Your microservices MUST be accessible only from a single entry point, i.e., an API Gateway.
@@ -45,13 +62,13 @@ I choose to only have one feed in the frontend to display the posts belonging to
 - [x] You need to make sure that all the major features in your application are executable from the frontend.
 - [x] Note: there is no requirement on the design of the pages. However, a bit of CSS to make the pages look a bit nicer will be appreciated and positively evaluated.
 
-- [ ] In the GUI, should be possible to...
+- [x] In the GUI, should be possible to...
 - [x] ... search/display existing users
 - [x] ... register a new user
 - [x] ... visualize the current user details
 - [x] ... create a new timeline message for the current user
-- [x] ... display all timeline messages of a user, sorted by time
-- [ ] ... create/accept friendship requests
+- [x] ... display all timeline messages of a user, sorted by time (Im sorting by id, this is incremental andi choose therefore to sort on id)
+- [x] ... create/accept friendship requests (Testing can verify this)
 
 #### B
 - [x] You MUST have security mechanisms in place to protect your REST APIs (e.g., although GET operations might be allowed to everyone, write operations like POST/PUT/PATCH do require authentication and authorization).
@@ -61,7 +78,7 @@ I choose to only have one feed in the frontend to display the posts belonging to
 - [x] From GUI, must be able to login/logout users. In the backend, this should be handled in a new REST API.
 - [x] A logged-in user should see a welcome message
 - [x] A user should be able to create new messages only on his/her timeline (add a test to verify it)
-- [ ] A user should be able to see the timelines of only his/her friends (add a test to verify it)
+- [x] A user should be able to see the timelines of only his/her friends (add a test to verify it)
 
 #### A
 - [ ] Besides the required REST APIs, you MUST also have a GraphQL one. It MUST have at least oneQuery and one Mutation.
