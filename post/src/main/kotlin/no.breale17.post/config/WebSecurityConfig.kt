@@ -21,6 +21,9 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/posts/**").hasRole("USER")
+                .antMatchers("/v2/api-docs", "/swagger-resources/configuration/ui",
+                        "/swagger-resources", "/swagger-resources/configuration/security",
+                        "/swagger-ui.html", "/webjars/**").hasRole("ADMIN")
                 .anyRequest().denyAll()
                 .and()
                 .csrf().disable()

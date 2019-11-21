@@ -30,7 +30,7 @@ class UserApi {
     @Autowired
     lateinit var userServce: UserService
 
-    @ApiOperation("*")
+    @ApiOperation("Get all users")
     @GetMapping(produces = [(MediaType.APPLICATION_JSON_VALUE)])
     fun getAll(            @RequestParam("ignoreSession", required = false)
                            ignoreSession: Boolean?,
@@ -67,7 +67,7 @@ class UserApi {
         )
     }
 
-    @ApiOperation("*")
+    @ApiOperation("Get basic/public information about a user")
     @GetMapping(path = ["/basic"],produces = [(MediaType.APPLICATION_JSON_VALUE)])
     fun getAllBasic(            @RequestParam("ignoreSession", required = false)
                            ignoreSession: Boolean?,
@@ -104,6 +104,7 @@ class UserApi {
         )
     }
 
+    @ApiOperation("get count of how many users registered")
     @GetMapping(path = ["/userCount"],
             produces = [(MediaType.APPLICATION_JSON_UTF8_VALUE)])
     fun getCount(): ResponseEntity<WrappedResponse<Long>> {
@@ -115,7 +116,7 @@ class UserApi {
 
 
 
-    @ApiOperation("*")
+    @ApiOperation("get a user by id")
     @GetMapping(path = ["/{id}"], produces = [(MediaType.APPLICATION_JSON_VALUE)])
     fun getById(
             @ApiParam("Unique user id")
@@ -141,7 +142,7 @@ class UserApi {
         )
     }
 
-    @ApiOperation("*")
+    @ApiOperation("Delete a user by id")
     @DeleteMapping(path = ["/{id}"], produces = [(MediaType.APPLICATION_JSON_VALUE)])
     fun deleteById(
             @ApiParam("Unique user id")
@@ -156,6 +157,7 @@ class UserApi {
         )
     }
 
+    @ApiOperation("Create or replace a user")
     @PutMapping(path = ["/{id}"],
             consumes = [(MediaType.APPLICATION_JSON_UTF8_VALUE)])
     fun replace(
@@ -360,7 +362,7 @@ class UserApi {
                 WrappedResponse<Unit>(code = 200, message = "Friend request sent").validated())
     }
 
-    @ApiOperation("Create a friendrequest")
+    @ApiOperation("answer a friendrequest")
     @PutMapping(path = ["/friendrequest"],consumes = [(MediaType.APPLICATION_JSON_UTF8_VALUE)])
     fun answerFriendRequest(@ApiParam("Information for new movie")
                             @RequestBody friendRequest: FriendRequestDto,

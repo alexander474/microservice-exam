@@ -8,7 +8,7 @@
 - [x] PATCH MUST use the JSON Merge Patch format.
 - [x] Each endpoint MUST use Wrapped Responses.
 - [x] Endpoints returning collections of data MUST use Pagination, unless you can convincedly argue (in code comments) that they do not deal with large quantity of data, and the size is always small and bounded. Example: an endpoint that returns the top 10 players in a leader-board for a game does not need to use Pagination.
-- [ ] MUST provide Swagger documentation for all your endpoints.
+- [x] MUST provide Swagger documentation for all your endpoints.
 - [x] Write AT LEAST one test with RestAssured per each endpoint.
 - [x] Add enough tests (unit or integration, it is up to you) such that, when they are run from IntelliJ, they MUST achieve AT LEAST a 70% code coverage.
 - [x] If the service communicates with another REST API, you need to use WireMock in the integration tests to mock it.

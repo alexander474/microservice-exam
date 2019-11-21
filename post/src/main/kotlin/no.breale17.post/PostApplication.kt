@@ -7,6 +7,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient
 import org.springframework.cloud.netflix.ribbon.RibbonClient
 import org.springframework.cloud.netflix.ribbon.RibbonClients
 import org.springframework.context.annotation.Bean
+import org.springframework.security.core.Authentication
 import org.springframework.web.client.RestTemplate
 import springfox.documentation.builders.ApiInfoBuilder
 import springfox.documentation.builders.PathSelectors
@@ -25,6 +26,7 @@ class PostsApplication {
     fun swaggerApi(): Docket {
         return Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
+                .ignoredParameterTypes(Authentication::class.java)
                 .select()
                 .paths(PathSelectors.any())
                 .build()

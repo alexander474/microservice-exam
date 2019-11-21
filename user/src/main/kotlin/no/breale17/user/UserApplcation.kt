@@ -31,8 +31,8 @@ class UserApplcation {
 
     private fun apiInfo(): ApiInfo {
         return ApiInfoBuilder()
-                .title("User Administration")
-                .description("API for user authentication and other user-related requests.")
+                .title("User API")
+                .description("API for handling a user")
                 .version("0.0.1")
                 .build()
     }

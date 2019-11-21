@@ -42,6 +42,9 @@ class WebSecurityConfig(
                 .antMatchers("/auth/user").authenticated()
                 .antMatchers("/auth/signUp").permitAll()
                 .antMatchers("/auth/login").permitAll()
+                .antMatchers("/v2/api-docs", "/swagger-resources/configuration/ui",
+                        "/swagger-resources", "/swagger-resources/configuration/security",
+                        "/swagger-ui.html", "/webjars/**").hasRole("ADMIN")
                 //.antMatchers("/auth/logout").permitAll()
                 .anyRequest().denyAll()
                 .and()

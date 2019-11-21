@@ -3,7 +3,7 @@ package no.breale17.dto
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 
-@ApiModel(description = "Information about a movie")
+@ApiModel(description = "Information about a post")
 data class PostDto(
 
         @ApiModelProperty("Title of the post")
