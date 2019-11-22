@@ -1,3 +1,7 @@
+/**
+ * Got inspiration from:
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/security/distributed-session/ds-user-service/src/main/kotlin/org/tsdes/advanced/security/distributedsession/userservice/WebSecurityConfig.kt
+ */
 package no.breale17.post.config
 
 import org.springframework.context.annotation.Bean
@@ -11,7 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails
 
 @Configuration
 @EnableWebSecurity
-class WebSecurityConfig: WebSecurityConfigurerAdapter() {
+class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
 
     override fun configure(http: HttpSecurity) {
@@ -32,15 +36,15 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
     }
 
     @Bean
-    fun userSecurity() : UserSecurity {
+    fun userSecurity(): UserSecurity {
         return UserSecurity()
     }
 }
 
 
-class UserSecurity{
+class UserSecurity {
 
-    fun checkId(authentication: Authentication, id: String) : Boolean{
+    fun checkId(authentication: Authentication, id: String): Boolean {
 
         val current = (authentication.principal as UserDetails).username
 

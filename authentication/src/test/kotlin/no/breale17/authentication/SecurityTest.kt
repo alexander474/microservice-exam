@@ -1,3 +1,7 @@
+/**
+ * Got inspiration from:
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/security/distributed-session/ds-auth/src/test/kotlin/org/tsdes/advanced/security/distributedsession/auth/db/SecurityTest.kt
+ */
 package no.breale17.authentication
 
 import io.restassured.RestAssured
@@ -105,7 +109,7 @@ class SecurityTest {
         return sessionCookie
     }
 
-    private fun checkAuthenticatedCookie(cookie: String, expectedCode: Int){
+    private fun checkAuthenticatedCookie(cookie: String, expectedCode: Int) {
         RestAssured.given().cookie("SESSION", cookie)
                 .get("/user")
                 .then()
@@ -167,7 +171,7 @@ class SecurityTest {
     }
 
     @Test
-    fun testLogout(){
+    fun testLogout() {
         val name = "foo"
         val pwd = "bar"
 
@@ -194,7 +198,6 @@ class SecurityTest {
                 .then()
                 .statusCode(401)
     }
-
 
 
     @Test
@@ -226,7 +229,7 @@ class SecurityTest {
     }
 
     @Test
-    fun testSignUpWithExistingUser(){
+    fun testSignUpWithExistingUser() {
         val name = "foo"
         val pwd = "bar"
 

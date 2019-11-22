@@ -1,20 +1,22 @@
+/**
+ * Got inspiration from:
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/microservice/gateway/gateway-service/src/test/kotlin/org/tsdes/advanced/microservice/gateway/service/ServiceApplicationTest.kt
+ */
 package no.breale17.post
 
 import io.restassured.RestAssured
 import io.restassured.http.ContentType
-import no.breale17.dto.PostDto
 import org.hamcrest.CoreMatchers
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class PostApiTest : TestBase(){
+class PostApiTest : TestBase() {
 
     @Test
-    fun testNotAuthenticated(){
+    fun testNotAuthenticated() {
 
         val res = getAMockedJsonResponse("a", "a", "a", "a", "a@a.com", "", "", "")
 
-        stubJsonResponse(res,"a")
+        stubJsonResponse(res, "a")
 
         RestAssured.given().get()
                 .then()
@@ -46,7 +48,7 @@ class PostApiTest : TestBase(){
         val password = "123"
         val title = "TestMovie"
         val message = "TestDescription"
-        val allPosts = getAllPosts()
+        val allPosts = getAllPosts(id, password)
 
         val location = createPost(id, password, title, message)
 
@@ -67,16 +69,16 @@ class PostApiTest : TestBase(){
     }
 
     @Test
-    fun testSeeFriendsPost() {
+    fun testDeletePost() {
         val id = "foo"
         val password = "123"
         val title = "TestMovie"
         val message = "TestDescription"
-        val allPosts = getAllPosts()
+        val allPosts = getAllPosts(id, password)
 
-        val location = createPost("bar", password, title, message)
+        val location = createPost(id, password, title, message)
 
-        RestAssured.given().auth().basic("bar", "123").accept(ContentType.JSON)
+        val postId= RestAssured.given().auth().basic(id, password).accept(ContentType.JSON)
                 .basePath("")
                 .get(location)
                 .then()
@@ -84,14 +86,69 @@ class PostApiTest : TestBase(){
                 .body("data.title", CoreMatchers.equalTo(title))
                 .body("data.message", CoreMatchers.equalTo(message))
                 .body("data.userId", CoreMatchers.equalTo(id))
+                .extract()
+                .jsonPath().getLong("data.id")
 
-        RestAssured.given().auth().basic(id, "123").accept(ContentType.JSON)
+        RestAssured.given().auth().basic(id, password).accept(ContentType.JSON)
+                .get()
+                .then()
+                .statusCode(200)
+                .body("data.list.size()", CoreMatchers.equalTo(allPosts!!.size + 1))
+
+        RestAssured.given().auth().basic(id, password).accept(ContentType.JSON)
+                .delete("/$postId")
+                .then()
+                .statusCode(204)
+    }
+
+    @Test
+    fun testDeletePostThatDoesNotExist() {
+        val id = "foo"
+        val password = "123"
+
+        RestAssured.given().auth().basic(id, password).accept(ContentType.JSON)
+                .delete("/-1")
+                .then()
+                .statusCode(404)
+    }
+
+    @Test
+    fun testDeletePostWithIllegalId() {
+        val id = "foo"
+        val password = "123"
+
+        RestAssured.given().auth().basic(id, password).accept(ContentType.JSON)
+                .delete("/thisIsNotANumber")
+                .then()
+                .statusCode(400)
+    }
+
+    @Test
+    fun testSeeFriendsPost() {
+        val id = "foo"
+        val id2 = "bar"
+        val password = "123"
+        val title = "TestMovie"
+        val message = "TestDescription"
+        val allPosts = getAllPosts(id, password, "\"${id2}\"")
+
+        val location = createPost(id2, password, title, message)
+
+        RestAssured.given().auth().basic(id2, password).accept(ContentType.JSON)
+                .basePath("")
+                .get(location)
+                .then()
+                .statusCode(200)
+                .body("data.title", CoreMatchers.equalTo(title))
+                .body("data.message", CoreMatchers.equalTo(message))
+                .body("data.userId", CoreMatchers.equalTo(id2))
+
+        RestAssured.given().auth().basic(id, password).accept(ContentType.JSON)
                 .get()
                 .then()
                 .statusCode(200)
                 .body("data.list.size()", CoreMatchers.equalTo(allPosts!!.size + 1))
     }
-
 
 
 }

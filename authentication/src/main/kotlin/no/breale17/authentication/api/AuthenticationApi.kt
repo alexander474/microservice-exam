@@ -1,3 +1,6 @@
+/**
+ * Got inspiration from https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/security/distributed-session/ds-auth/src/main/kotlin/org/tsdes/advanced/security/distributedsession/auth/RestApi.kt
+ */
 package no.breale17.authentication.api
 
 import io.swagger.annotations.Api
@@ -30,13 +33,13 @@ class AuthenticationApi(
 
     @GetMapping(path = ["/user"], produces = [(MediaType.APPLICATION_JSON_VALUE)])
     fun user(user: Principal): ResponseEntity<WrappedResponse<MutableMap<String, Any>>> {
-        val map = mutableMapOf<String,Any>()
+        val map = mutableMapOf<String, Any>()
         map["name"] = user.name
         map["roles"] = AuthorityUtils.authorityListToSet((user as Authentication).authorities)
         return ResponseEntity.ok(WrappedResponse(
                 code = 200,
                 data = map
-            ).validated()
+        ).validated()
         )
     }
 
@@ -45,8 +48,8 @@ class AuthenticationApi(
     fun signIn(@RequestBody dto: AuthenticationDto)
             : ResponseEntity<WrappedResponse<Void>> {
 
-        val userId : String = dto.userId!!
-        val password : String = dto.password!!
+        val userId: String = dto.userId!!
+        val password: String = dto.password!!
 
         val registered = authenticationService.createUser(userId, password, setOf("USER"))
 
@@ -80,12 +83,12 @@ class AuthenticationApi(
     fun login(@RequestBody dto: AuthenticationDto)
             : ResponseEntity<WrappedResponse<Void>> {
 
-        val userId : String = dto.userId!!
-        val password : String = dto.password!!
+        val userId: String = dto.userId!!
+        val password: String = dto.password!!
 
-        val userDetails = try{
+        val userDetails = try {
             userDetailsService.loadUserByUsername(userId)
-        } catch (e: UsernameNotFoundException){
+        } catch (e: UsernameNotFoundException) {
             return ResponseEntity.status(400).body(
                     WrappedResponse<Void>(
                             code = 400,

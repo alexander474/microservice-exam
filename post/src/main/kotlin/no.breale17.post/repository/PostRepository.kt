@@ -1,3 +1,7 @@
+/**
+ * Got inspiration from:
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/rest/pagination/src/main/kotlin/org/tsdes/advanced/rest/pagination/NewsService.kt
+ */
 package no.breale17.post.repository
 
 import no.breale17.post.entity.PostEntity
@@ -15,7 +19,7 @@ interface PostRepository : CrudRepository<PostEntity, Long>, PostRepositoryCusto
 }
 
 @Transactional
-interface PostRepositoryCustom{
+interface PostRepositoryCustom {
 
     fun numberOfPosts(userIds: List<String>): Long
 
@@ -30,7 +34,7 @@ open class PostRepositoryImpl : PostRepositoryCustom {
     @Autowired
     private lateinit var em: EntityManager
 
-    override fun numberOfPosts(userIds: List<String>): Long{
+    override fun numberOfPosts(userIds: List<String>): Long {
         val query: TypedQuery<Long>
         query = em.createQuery("select count(p) from PostEntity p where p.userId in :ids", Long::class.javaObjectType)
         query.setParameter("ids", userIds)

@@ -1,11 +1,9 @@
+# Got inspiration from:
+# https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/security/distributed-session/ds-user-service/src/main/resources/application.yml
 spring:
   main:
-    # need to allow bean overriding in fake security config
     allow-bean-definition-overriding: true
   session:
-    # during testing for this service in isolation,
-    # do not use Redis. Disabling SpringSession will fall-back to
-    # default sessions in the servlet
     store-type: none
   datasource:
     url: "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"

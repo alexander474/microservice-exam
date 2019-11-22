@@ -1,23 +1,13 @@
 // https://github.com/arcuri82/web_development_and_api_design
 import React from 'react';
-import {Link, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import {requestHandler} from "../../utils/RequestHandler"
-import {
-    Alert,
-    Button,
-    Card,
-    CardBody, CardTitle,
-    Input,
-    InputGroup,
-    InputGroupAddon,
-    InputGroupText,
-    UncontrolledAlert
-} from "reactstrap";
+import {Button, Card, CardBody, CardTitle, Input, InputGroup, UncontrolledAlert} from "reactstrap";
 
 
-export class PostForm extends React.Component{
+export class PostForm extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -27,21 +17,20 @@ export class PostForm extends React.Component{
         };
     }
 
-    onTitleChange = (event) =>{
+    onTitleChange = (event) => {
         this.setState({title: event.target.value});
     };
 
-    onMessageChange = (event) =>{
+    onMessageChange = (event) => {
         this.setState({message: event.target.value});
     };
-
 
 
     createPost = async () => {
         const {title, message} = this.state;
         this.setState({errorMsg: null});
 
-        if(title.length > 0 && message.length > 0) {
+        if (title.length > 0 && message.length > 0) {
             requestHandler.createPost(title, message).then(res => {
                 if (res.status === 201) {
                     this.props.history.push('/');
@@ -49,22 +38,22 @@ export class PostForm extends React.Component{
                     this.setState({errorMsg: res.data.message});
                 }
             })
-        }else{
+        } else {
             this.setState({errorMsg: "Pleas fill out the form"});
         }
 
     };
 
 
-    render(){
+    render() {
 
         let error = <div></div>;
-        if(this.state.errorMsg !== null){
+        if (this.state.errorMsg !== null) {
             error = <UncontrolledAlert color="danger">{this.state.errorMsg}</UncontrolledAlert>
         }
 
 
-        return(
+        return (
             <div>
                 <Card>
                     <CardBody>
@@ -72,21 +61,21 @@ export class PostForm extends React.Component{
                         <InputGroup>
                             <Input type="text"
                                    id="titleInput"
-                                   onChange={(e)=>this.onTitleChange(e)}
+                                   onChange={(e) => this.onTitleChange(e)}
                                    value={this.state.title}
-                                   placeholder="title" />
+                                   placeholder="title"/>
                         </InputGroup>
                         <InputGroup>
                             <Input type="text"
                                    id="messageInput"
-                                   onChange={(e)=>this.onMessageChange(e)}
+                                   onChange={(e) => this.onMessageChange(e)}
                                    value={this.state.message}
-                                   placeholder="message" />
+                                   placeholder="message"/>
                         </InputGroup>
 
                         {error}
 
-                        <Button onClick={()=>this.createPost()} id="userUpdateBtn" color="primary">Post</Button>
+                        <Button onClick={() => this.createPost()} id="userUpdateBtn" color="primary">Post</Button>
                     </CardBody>
                 </Card>
             </div>);

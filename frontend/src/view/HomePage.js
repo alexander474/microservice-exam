@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import {withRouter} from "react-router-dom";
 import {Col, Row} from "reactstrap";
 import UserCount from "../components/UserCount/UserCount";
 import Post from "../components/post/Post";
@@ -15,13 +15,13 @@ export class HomePage extends React.Component {
         const {isLoggedIn, isAdmin, user, userInformation, getUserInformation} = this.props;
         let name = "";
         let email = "";
-        if(userInformation !== null && userInformation !== undefined) {
+        if (userInformation !== null && userInformation !== undefined) {
             if (userInformation.name !== null && userInformation.name !== undefined) name += userInformation.name;
             if (userInformation.middlename !== null && userInformation.middlename !== undefined) name += " " + userInformation.middlename;
             if (userInformation.surname !== null && userInformation.surname !== undefined) name += " " + userInformation.surname;
             if (userInformation.email !== null && userInformation.email !== undefined) email = userInformation.email;
         }
-        return(
+        return (
             <div>
                 <Row>
                     <Col md={12}>
@@ -36,7 +36,8 @@ export class HomePage extends React.Component {
                         <Post/>
                     </Col>
                     <Col md={6}>
-                        <FriendRequest getUserInformation={getUserInformation} userInformation={userInformation} user={user}/>
+                        <FriendRequest getUserInformation={getUserInformation} userInformation={userInformation}
+                                       user={user}/>
                     </Col>
                 </Row>
             </div>
@@ -44,7 +45,7 @@ export class HomePage extends React.Component {
     };
 
     renderNotLoggedIn = () => {
-        return(
+        return (
             <div>
                 <Row>
                     <Col md={12}>
@@ -59,13 +60,13 @@ export class HomePage extends React.Component {
     render() {
         const {isLoggedIn, isAdmin, user, userInformation, updateAuthUse} = this.props;
         return (
-            <div >
-                <Row >
+            <div>
+                <Row>
                     <Col md={12}>
                         <UserCount/>
                     </Col>
                 </Row>
-                <Row >
+                <Row>
                     <Col md={12}>
                         {isLoggedIn ? this.renderLoggedIn() : this.renderNotLoggedIn()}
                     </Col>

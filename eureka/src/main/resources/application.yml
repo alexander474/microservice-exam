@@ -1,3 +1,5 @@
+# Got inspiration from:
+# https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/microservice/gateway/gateway-eureka/src/main/resources/application.yml
 server:
   port: 8761
 

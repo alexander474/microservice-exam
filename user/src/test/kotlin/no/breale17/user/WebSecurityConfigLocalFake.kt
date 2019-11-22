@@ -1,3 +1,7 @@
+/**
+ * Got inspiration from:
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/security/distributed-session/ds-user-service/src/test/kotlin/org/tsdes/advanced/security/distributedsession/userservice/WebSecurityConfigLocalFake.kt
+ */
 package no.breale17.user
 
 import no.breale17.user.config.WebSecurityConfig
@@ -8,23 +12,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 
-/*
-  When testing this service in isolation, we would not have the Gateway up and running.
-  So we override the default security configuration to use an in-memory
-  set of users/passwords.
- */
 @Configuration
 @EnableWebSecurity
 @Order(1)
 class WebSecurityConfigLocalFake : WebSecurityConfig() {
 
     override fun configure(http: HttpSecurity) {
-        //call method in parent-class to apply same settings
         super.configure(http)
-
         http.httpBasic()
                 .and()
-                //but then override the session management
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
     }

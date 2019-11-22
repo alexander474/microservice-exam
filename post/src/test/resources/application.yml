@@ -1,3 +1,5 @@
+# Got inspiration from:
+# https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/security/distributed-session/ds-user-service/src/main/resources/application.yml
 userServiceAddress: "localhost:8099"
 eureka:
   client:

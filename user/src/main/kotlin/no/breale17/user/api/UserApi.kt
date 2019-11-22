@@ -1,3 +1,7 @@
+/**
+ * Got inspiration from:
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/security/distributed-session/ds-user-service/src/main/kotlin/org/tsdes/advanced/security/distributedsession/userservice/RestApi.kt
+ */
 package no.breale17.user.api
 
 import com.fasterxml.jackson.databind.JsonNode
@@ -13,10 +17,10 @@ import no.breale17.user.service.UserService
 import no.utils.pagination.PageDto
 import no.utils.wrapper.WrappedResponse
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.*
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
-import java.net.URI
 import java.security.Principal
 
 @Api(value = "/users", description = "Retrieves user(s).")
@@ -32,27 +36,27 @@ class UserApi {
 
     @ApiOperation("Get all users")
     @GetMapping(produces = [(MediaType.APPLICATION_JSON_VALUE)])
-    fun getAll(            @RequestParam("ignoreSession", required = false)
-                           ignoreSession: Boolean?,
+    fun getAll(@RequestParam("ignoreSession", required = false)
+               ignoreSession: Boolean?,
 
-                           @CookieValue("SESSION", required = false)
-                           cookie: String?,
+               @CookieValue("SESSION", required = false)
+               cookie: String?,
 
-                           @ApiParam("Offset in the list of news")
-                           @RequestParam("offset", defaultValue = "0")
-                           offset: Int,
+               @ApiParam("Offset in the list of news")
+               @RequestParam("offset", defaultValue = "0")
+               offset: Int,
 
-                           @ApiParam("Limit of news in a single retrieved page")
-                           @RequestParam("limit", defaultValue = "10")
-                           limit: Int,
-                           user: Principal): ResponseEntity<WrappedResponse<PageDto<UserDto>>>{
+               @ApiParam("Limit of news in a single retrieved page")
+               @RequestParam("limit", defaultValue = "10")
+               limit: Int,
+               user: Principal): ResponseEntity<WrappedResponse<PageDto<UserDto>>> {
         val maxPageLimit = 50
         val maxFromDb = 1000
         val onDbWithId = userServce.getNumberOfUsers()
 
-        if (offset < 0 || limit < 1 || limit > maxPageLimit || (offset+limit) > maxFromDb || offset > onDbWithId) {
+        if (offset < 0 || limit < 1 || limit > maxPageLimit || (offset + limit) > maxFromDb || offset > onDbWithId) {
             return ResponseEntity.status(400).body(
-                    WrappedResponse<PageDto<UserDto>>(message="Illegal offset or limit" ,code = 400)
+                    WrappedResponse<PageDto<UserDto>>(message = "Illegal offset or limit", code = 400)
                             .validated())
         }
 
@@ -68,28 +72,28 @@ class UserApi {
     }
 
     @ApiOperation("Get basic/public information about a user")
-    @GetMapping(path = ["/basic"],produces = [(MediaType.APPLICATION_JSON_VALUE)])
-    fun getAllBasic(            @RequestParam("ignoreSession", required = false)
-                           ignoreSession: Boolean?,
+    @GetMapping(path = ["/basic"], produces = [(MediaType.APPLICATION_JSON_VALUE)])
+    fun getAllBasic(@RequestParam("ignoreSession", required = false)
+                    ignoreSession: Boolean?,
 
-                           @CookieValue("SESSION", required = false)
-                           cookie: String?,
+                    @CookieValue("SESSION", required = false)
+                    cookie: String?,
 
-                           @ApiParam("Offset in the list of news")
-                           @RequestParam("offset", defaultValue = "0")
-                           offset: Int,
+                    @ApiParam("Offset in the list of news")
+                    @RequestParam("offset", defaultValue = "0")
+                    offset: Int,
 
-                           @ApiParam("Limit of news in a single retrieved page")
-                           @RequestParam("limit", defaultValue = "10")
-                           limit: Int,
-                           user: Principal): ResponseEntity<WrappedResponse<PageDto<UserBasicDto>>>{
+                    @ApiParam("Limit of news in a single retrieved page")
+                    @RequestParam("limit", defaultValue = "10")
+                    limit: Int,
+                    user: Principal): ResponseEntity<WrappedResponse<PageDto<UserBasicDto>>> {
         val maxPageLimit = 50
         val maxFromDb = 1000
         val onDbWithId = userServce.getNumberOfUsers()
 
-        if (offset < 0 || limit < 1 || limit > maxPageLimit || (offset+limit) > maxFromDb || offset > onDbWithId) {
+        if (offset < 0 || limit < 1 || limit > maxPageLimit || (offset + limit) > maxFromDb || offset > onDbWithId) {
             return ResponseEntity.status(400).body(
-                    WrappedResponse<PageDto<UserBasicDto>>(message="Illegal offset or limit" ,code = 400)
+                    WrappedResponse<PageDto<UserBasicDto>>(message = "Illegal offset or limit", code = 400)
                             .validated())
         }
 
@@ -115,17 +119,16 @@ class UserApi {
     }
 
 
-
     @ApiOperation("get a user by id")
     @GetMapping(path = ["/{id}"], produces = [(MediaType.APPLICATION_JSON_VALUE)])
     fun getById(
             @ApiParam("Unique user id")
             @PathVariable("id") id: String
-    ): ResponseEntity<WrappedResponse<UserDto>>{
+    ): ResponseEntity<WrappedResponse<UserDto>> {
 
         val user = userServce.getById(id)
 
-        if(user === null){
+        if (user === null) {
             return ResponseEntity.status(404).body(
                     WrappedResponse<UserDto>(
                             code = 404,
@@ -147,7 +150,7 @@ class UserApi {
     fun deleteById(
             @ApiParam("Unique user id")
             @PathVariable("id") id: String
-    ): ResponseEntity<WrappedResponse<Void>>{
+    ): ResponseEntity<WrappedResponse<Void>> {
         userServce.deleteUser(id)
 
         return ResponseEntity.status(204).body(
@@ -175,7 +178,7 @@ class UserApi {
         }
 
         val alreadyExists = userServce.exists(id)
-        var code = if(alreadyExists) 204 else 201
+        var code = if (alreadyExists) 204 else 201
 
         try {
             userServce.saveUser(user.name, dto)
@@ -186,7 +189,7 @@ class UserApi {
         return ResponseEntity.status(code).body(
                 WrappedResponse<Void>(
                         code = code,
-                        message = if(code in 200..299) "SUCCESS" else "SOMETHING WENT WRONG"
+                        message = if (code in 200..299) "SUCCESS" else "SOMETHING WENT WRONG"
                 ).validated())
     }
 
@@ -198,7 +201,7 @@ class UserApi {
                    id: String,
                    @ApiParam("The partial patch")
                    @RequestBody
-                   jsonPatch: String): ResponseEntity<WrappedResponse<Void>>{
+                   jsonPatch: String): ResponseEntity<WrappedResponse<Void>> {
         val dto = userServce.getById(id)
                 ?: return ResponseEntity.status(409).body(
                         WrappedResponse<Void>(
@@ -249,7 +252,7 @@ class UserApi {
 
         var name = dto.name
         var middleName = dto.middleName
-        var surname= dto.surname
+        var surname = dto.surname
         var email = dto.email
 
         if (jsonNode.has("name")) {
@@ -318,22 +321,22 @@ class UserApi {
     }
 
     @ApiOperation("Create a friendrequest")
-    @PostMapping(path = ["/friendrequest"],consumes = [(MediaType.APPLICATION_JSON_UTF8_VALUE)])
+    @PostMapping(path = ["/friendrequest"], consumes = [(MediaType.APPLICATION_JSON_UTF8_VALUE)])
     fun createFriendRequest(@ApiParam("Information for new movie")
-                   @RequestBody friendRequest: FriendRequestDto,
+                            @RequestBody friendRequest: FriendRequestDto,
                             @RequestParam("ignoreSession", required = false) ignoreSession: Boolean?,
                             @CookieValue("SESSION", required = false)
-                   cookie: String?,
+                            cookie: String?,
                             user: Principal): ResponseEntity<WrappedResponse<Unit>> {
 
 
-        if(user.name === null){
+        if (user.name === null) {
             return ResponseEntity.status(400).body(
                     WrappedResponse<Unit>(code = 400)
                             .validated())
         }
 
-        if(friendRequest.from === null || friendRequest.to === null){
+        if (friendRequest.from === null || friendRequest.to === null) {
             return ResponseEntity.status(400).body(
                     WrappedResponse<Unit>(
                             code = 400,
@@ -341,7 +344,7 @@ class UserApi {
                     ).validated())
         }
 
-        if(friendRequest.from != user.name){
+        if (friendRequest.from != user.name) {
             return ResponseEntity.status(400).body(
                     WrappedResponse<Unit>(
                             code = 400,
@@ -352,7 +355,7 @@ class UserApi {
 
         val sent = userServce.sendRequest(friendRequest.from!!, friendRequest.to!!)
 
-        if(!sent){
+        if (!sent) {
             return ResponseEntity.status(400).body(
                     WrappedResponse<Unit>(code = 400, message = "Unable to send request")
                             .validated())
@@ -363,7 +366,7 @@ class UserApi {
     }
 
     @ApiOperation("answer a friendrequest")
-    @PutMapping(path = ["/friendrequest"],consumes = [(MediaType.APPLICATION_JSON_UTF8_VALUE)])
+    @PutMapping(path = ["/friendrequest"], consumes = [(MediaType.APPLICATION_JSON_UTF8_VALUE)])
     fun answerFriendRequest(@ApiParam("Information for new movie")
                             @RequestBody friendRequest: FriendRequestDto,
                             @RequestParam("ignoreSession", required = false) ignoreSession: Boolean?,
@@ -372,13 +375,13 @@ class UserApi {
                             user: Principal): ResponseEntity<WrappedResponse<Unit>> {
 
 
-        if(user.name === null){
+        if (user.name === null) {
             return ResponseEntity.status(400).body(
                     WrappedResponse<Unit>(code = 400)
                             .validated())
         }
 
-        if(friendRequest.from === null || friendRequest.to === null || friendRequest.status === null){
+        if (friendRequest.from === null || friendRequest.to === null || friendRequest.status === null) {
             return ResponseEntity.status(400).body(
                     WrappedResponse<Unit>(
                             code = 400,
@@ -388,10 +391,10 @@ class UserApi {
 
 
         var message = ""
-        if(friendRequest.status === FriendRequestStatus.APPROVED){
+        if (friendRequest.status === FriendRequestStatus.APPROVED) {
             userServce.addFriend(friendRequest.from!!, friendRequest.to!!)
             message = "FRIEND ADDED"
-        }else if(friendRequest.status === FriendRequestStatus.DENIED){
+        } else if (friendRequest.status === FriendRequestStatus.DENIED) {
             userServce.removeRequest(friendRequest.from!!, friendRequest.to!!)
             message = "FRIEND REQUEST REMOVED"
         }

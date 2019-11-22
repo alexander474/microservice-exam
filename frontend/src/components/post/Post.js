@@ -1,17 +1,7 @@
 import React from "react";
-import {
-    Badge,
-    Card,
-    CardBody,
-    CardSubtitle,
-    CardText,
-    CardTitle,
-    Pagination,
-    PaginationItem,
-    PaginationLink
-} from "reactstrap";
+import {Badge, Card, CardBody, CardSubtitle, CardText, CardTitle} from "reactstrap";
 import {requestHandler} from "../../utils/RequestHandler"
-import { readableTime } from "../../utils/UnixTranslate";
+import {readableTime} from "../../utils/UnixTranslate";
 
 export default class Post extends React.Component {
     constructor(props) {
@@ -26,26 +16,26 @@ export default class Post extends React.Component {
     }
 
     onPostsChange = (posts) => {
-      this.setState({posts})
+        this.setState({posts})
     };
 
     getPosts = async (uri) => {
-        await requestHandler.getAllPosts(uri).then(r =>  {
+        await requestHandler.getAllPosts(uri).then(r => {
             console.log(r);
-            if(r.status === 200) {
+            if (r.status === 200) {
                 this.onPostsChange(r.data.data.list);
-            }else{
+            } else {
                 console.log("Could not retrieve posts!")
             }
         }).catch(e => console.log("Error retrieving posts!"))
     };
 
     render() {
-        const { posts } = this.state;
+        const {posts} = this.state;
         return (
             <div>
-                <Badge onClick={()=>this.getPosts()} color="secondary">Reload</Badge>
-                { posts !== null ? posts.map((p,i) => (
+                <Badge onClick={() => this.getPosts()} color="secondary">Reload</Badge>
+                {posts !== null ? posts.map((p, i) => (
                     <Card style={{marginTop: "1rem", marginBottom: "1rem"}}>
                         <CardBody>
                             <CardTitle>{p.userId !== null ? p.userId : "User"}: {p.title !== null ? p.title : "No title"}</CardTitle>
@@ -53,7 +43,7 @@ export default class Post extends React.Component {
                             <CardText>{p.message !== null ? p.message : "No message"}</CardText>
                         </CardBody>
                     </Card>
-                )): <p>No posts found</p>}
+                )) : <p>No posts found</p>}
             </div>
         );
     }

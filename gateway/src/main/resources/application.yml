@@ -1,3 +1,6 @@
+# Got inspiration from:
+# https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/microservice/gateway/gateway-scg/src/main/resources/application.yml
+
 spring:
   redis:
     host: redis

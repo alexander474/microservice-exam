@@ -1,3 +1,7 @@
+/**
+ * Got inspiration from:
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/security/distributed-session/ds-user-service/src/test/kotlin/org/tsdes/advanced/security/distributedsession/userservice/WebSecurityConfigLocalFake.kt
+ */
 package no.breale17.post
 
 import no.breale17.post.config.WebSecurityConfig

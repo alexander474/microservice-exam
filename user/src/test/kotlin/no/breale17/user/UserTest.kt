@@ -1,3 +1,8 @@
+/**
+ * Got inspiration from:
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/microservice/gateway/gateway-service/src/test/kotlin/org/tsdes/advanced/microservice/gateway/service/ServiceApplicationTest.kt
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/security/distributed-session/ds-user-service/src/test/kotlin/org/tsdes/advanced/security/distributedsession/userservice/ApplicationTest.kt
+ */
 package no.breale17.user
 
 import io.restassured.RestAssured
@@ -18,13 +23,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserTest{
+class UserTest {
 
     @LocalServerPort
     private var port = 0
 
     @Autowired
-    private lateinit var userRepository : UserRepository
+    private lateinit var userRepository: UserRepository
 
 
     @BeforeEach
@@ -37,26 +42,26 @@ class UserTest{
         userRepository.deleteAll()
     }
 
-    private fun createUser(id: String, password: String, name: String, middleName: String, surname: String, email: String): UserDto{
+    private fun createUser(id: String, password: String, name: String, middleName: String, surname: String, email: String): UserDto {
         val currentSize = getSize()
         checkSize(currentSize.toInt())
 
         val dto = UserDto(id, name, middleName, surname, email)
 
-        RestAssured.given().auth().basic(id,password)
+        RestAssured.given().auth().basic(id, password)
                 .contentType(ContentType.JSON)
                 .body(dto)
                 .put("/$id")
                 .then()
                 .statusCode(201)
 
-        checkSize((currentSize.toInt())+1)
+        checkSize((currentSize.toInt()) + 1)
         return dto
     }
 
 
     @Test
-    fun testNeedAdmin(){
+    fun testNeedAdmin() {
 
         RestAssured.given().get()
                 .then()
@@ -64,9 +69,8 @@ class UserTest{
     }
 
 
-
-    private fun checkSize(n: Int){
-        RestAssured.given().auth().basic("admin","admin")
+    private fun checkSize(n: Int) {
+        RestAssured.given().auth().basic("admin", "admin")
                 .accept(ContentType.JSON)
                 .get()
                 .then()
@@ -74,8 +78,8 @@ class UserTest{
                 .body("data.list.size()", CoreMatchers.equalTo(n))
     }
 
-    private fun getSize(): Long{
-        return RestAssured.given().auth().basic("admin","admin")
+    private fun getSize(): Long {
+        return RestAssured.given().auth().basic("admin", "admin")
                 .accept(ContentType.JSON)
                 .get()
                 .then()
@@ -84,7 +88,7 @@ class UserTest{
     }
 
     @Test
-    fun testUserCount(){
+    fun testUserCount() {
         checkSize(0)
         RestAssured.given().get("/userCount")
                 .then()
@@ -93,7 +97,7 @@ class UserTest{
 
         val id = "foo"
         val dto = UserDto(id, "A", "B", "C", "a@a.com")
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType(ContentType.JSON)
                 .body(dto)
                 .put("/$id")
@@ -109,13 +113,13 @@ class UserTest{
 
 
     @Test
-    fun testCreate(){
+    fun testCreate() {
         checkSize(0)
 
         val id = "foo"
         val dto = UserDto(id, "A", "B", "C", "a@a.com")
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType(ContentType.JSON)
                 .body(dto)
                 .put("/$id")
@@ -126,13 +130,13 @@ class UserTest{
     }
 
     @Test
-    fun testDeleteUser(){
+    fun testDeleteUser() {
         checkSize(0)
 
         val id = "foo"
         val dto = UserDto(id, "A", "B", "C", "a@a.com")
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType(ContentType.JSON)
                 .body(dto)
                 .put("/$id")
@@ -141,7 +145,7 @@ class UserTest{
 
         checkSize(1)
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .delete("/$id")
                 .then()
                 .statusCode(204)
@@ -150,13 +154,13 @@ class UserTest{
     }
 
     @Test
-    fun testGetUserBasicInfo(){
+    fun testGetUserBasicInfo() {
         val id = "foo"
         val id2 = "bar"
         val id3 = "admin"
         val password = "123"
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .accept(ContentType.JSON)
                 .get("/basic")
                 .then()
@@ -167,7 +171,7 @@ class UserTest{
         createUser(id2, password, "A2", "B2", "C2", "a2@a.com")
         createUser(id3, "admin", "A2", "B2", "C2", "a2@a.com")
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .accept(ContentType.JSON)
                 .get("/basic")
                 .then()
@@ -176,7 +180,7 @@ class UserTest{
     }
 
     @Test
-    fun testAddFriend(){
+    fun testAddFriend() {
         val id = "foo"
         val id2 = "bar"
         val password = "123"
@@ -187,9 +191,8 @@ class UserTest{
         createUser(id2, password, "A2", "B2", "C2", "a2@a.com")
 
 
-
         //Send friend request from foo
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType(ContentType.JSON)
                 .body(friendRequest)
                 .post("/friendrequest")
@@ -197,7 +200,7 @@ class UserTest{
                 .statusCode(200)
 
         //Check that request is stored in both users
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .accept(ContentType.JSON)
                 .get("/$id")
                 .then()
@@ -206,7 +209,7 @@ class UserTest{
                 .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
                 .body("data.requestsOut.size()", CoreMatchers.equalTo(1))
 
-        RestAssured.given().auth().basic(id2,"123")
+        RestAssured.given().auth().basic(id2, "123")
                 .accept(ContentType.JSON)
                 .get("/$id2")
                 .then()
@@ -216,7 +219,7 @@ class UserTest{
                 .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
 
         //Approve friend request from bar
-        RestAssured.given().auth().basic(id2,"123")
+        RestAssured.given().auth().basic(id2, "123")
                 .contentType(ContentType.JSON)
                 .body(friendRequestResponse)
                 .put("/friendrequest")
@@ -224,7 +227,7 @@ class UserTest{
                 .statusCode(200)
 
         //Check that they are friends
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .accept(ContentType.JSON)
                 .get("/$id")
                 .then()
@@ -235,7 +238,7 @@ class UserTest{
                 .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
 
 
-        RestAssured.given().auth().basic(id2,"123")
+        RestAssured.given().auth().basic(id2, "123")
                 .accept(ContentType.JSON)
                 .get("/$id2")
                 .then()
@@ -248,7 +251,7 @@ class UserTest{
     }
 
     @Test
-    fun testDenyFriendRequest(){
+    fun testDenyFriendRequest() {
         val id = "foo"
         val id2 = "bar"
         val password = "123"
@@ -260,7 +263,7 @@ class UserTest{
 
 
         //Send friend request from foo
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType(ContentType.JSON)
                 .body(friendRequest)
                 .post("/friendrequest")
@@ -268,7 +271,7 @@ class UserTest{
                 .statusCode(200)
 
         //Check that request is stored in both users
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .accept(ContentType.JSON)
                 .get("/$id")
                 .then()
@@ -277,7 +280,7 @@ class UserTest{
                 .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
                 .body("data.requestsOut.size()", CoreMatchers.equalTo(1))
 
-        RestAssured.given().auth().basic(id2,"123")
+        RestAssured.given().auth().basic(id2, "123")
                 .accept(ContentType.JSON)
                 .get("/$id2")
                 .then()
@@ -287,7 +290,7 @@ class UserTest{
                 .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
 
         //Deny friend request from bar
-        RestAssured.given().auth().basic(id2,"123")
+        RestAssured.given().auth().basic(id2, "123")
                 .contentType(ContentType.JSON)
                 .body(friendRequestResponse)
                 .put("/friendrequest")
@@ -295,7 +298,7 @@ class UserTest{
                 .statusCode(200)
 
         //Check that they are not friends and request is deleted
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .accept(ContentType.JSON)
                 .get("/$id")
                 .then()
@@ -305,7 +308,7 @@ class UserTest{
                 .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
 
 
-        RestAssured.given().auth().basic(id2,"123")
+        RestAssured.given().auth().basic(id2, "123")
                 .accept(ContentType.JSON)
                 .get("/$id2")
                 .then()
@@ -317,13 +320,13 @@ class UserTest{
     }
 
     @Test
-    fun testGetAllIllegalOffsetAndLimit(){
+    fun testGetAllIllegalOffsetAndLimit() {
         val id = "foo"
         val password = "123"
 
         createUser(id, password, "A", "B", "C", "a@a.com")
 
-        RestAssured.given().auth().basic("admin","admin")
+        RestAssured.given().auth().basic("admin", "admin")
                 .accept(ContentType.JSON)
                 .queryParam("offset", 10_000)
                 .queryParam("limit", 10_000)
@@ -333,10 +336,10 @@ class UserTest{
     }
 
     @Test
-    fun testUserDoesNotExist(){
+    fun testUserDoesNotExist() {
         val id = "foo"
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .accept(ContentType.JSON)
                 .get("/$id")
                 .then()
@@ -344,7 +347,7 @@ class UserTest{
     }
 
     @Test
-    fun testReplaceWithNotMatchinId(){
+    fun testReplaceWithNotMatchinId() {
         val id = "foo"
         val password = "123"
 
@@ -352,7 +355,7 @@ class UserTest{
 
         val dto2 = UserDto("notMatching", "A", "B", "C", "a@a.com")
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType(ContentType.JSON)
                 .body(dto2)
                 .put("/$id")
@@ -362,7 +365,7 @@ class UserTest{
 
 
     @Test
-    fun testChangeField(){
+    fun testChangeField() {
         val id = "foo"
         val name = "John"
         val password = "123"
@@ -373,7 +376,7 @@ class UserTest{
 
         dto.name = changed
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType(ContentType.JSON)
                 .body(dto)
                 .put("/$id")
@@ -382,7 +385,7 @@ class UserTest{
 
         checkSize(1)
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .accept(ContentType.JSON)
                 .get("/$id")
                 .then()
@@ -391,15 +394,14 @@ class UserTest{
     }
 
 
-
     @Test
-    fun testForbiddenToChangeOthers(){
+    fun testForbiddenToChangeOthers() {
 
         checkSize(0)
 
         val first = "foo"
 
-        RestAssured.given().auth().basic(first,"123")
+        RestAssured.given().auth().basic(first, "123")
                 .contentType(ContentType.JSON)
                 .body(UserDto(first, "A", "B", "C", "a@a.com"))
                 .put("/$first")
@@ -411,7 +413,7 @@ class UserTest{
 
         val second = "bar"
 
-        RestAssured.given().auth().basic(second,"123")
+        RestAssured.given().auth().basic(second, "123")
                 .contentType(ContentType.JSON)
                 .body(UserDto(second, "bla", "bla", "bla", "bla@bla.com"))
                 .put("/$second")
@@ -421,7 +423,7 @@ class UserTest{
         checkSize(2)
 
 
-        RestAssured.given().auth().basic(first,"123")
+        RestAssured.given().auth().basic(first, "123")
                 .contentType(ContentType.JSON)
                 .body(UserDto(second, "forbidden", "forbidden", "forbidden", "a@a.com"))
                 .put("/$second")
@@ -432,7 +434,7 @@ class UserTest{
     }
 
     @Test
-    fun testJsonMergePatch(){
+    fun testJsonMergePatch() {
         val id = "foo"
         val password = "123"
 
@@ -447,7 +449,7 @@ class UserTest{
             }
         """.trimIndent()
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType("application/merge-patch+json")
                 .body(dto2)
                 .patch("/$id")
@@ -456,7 +458,7 @@ class UserTest{
     }
 
     @Test
-    fun testJsonMergePatchIllegalName(){
+    fun testJsonMergePatchIllegalName() {
         val id = "foo"
         val password = "123"
 
@@ -471,7 +473,7 @@ class UserTest{
             }
         """.trimIndent()
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType("application/merge-patch+json")
                 .body(dto2)
                 .patch("/$id")
@@ -480,7 +482,7 @@ class UserTest{
     }
 
     @Test
-    fun testJsonMergePatchIllegalMiddleName(){
+    fun testJsonMergePatchIllegalMiddleName() {
         val id = "foo"
         val password = "123"
 
@@ -495,15 +497,16 @@ class UserTest{
             }
         """.trimIndent()
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType("application/merge-patch+json")
                 .body(dto2)
                 .patch("/$id")
                 .then()
                 .statusCode(400)
     }
+
     @Test
-    fun testJsonMergePatchIllegalSurname(){
+    fun testJsonMergePatchIllegalSurname() {
         val id = "foo"
         val password = "123"
 
@@ -518,15 +521,16 @@ class UserTest{
             }
         """.trimIndent()
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType("application/merge-patch+json")
                 .body(dto2)
                 .patch("/$id")
                 .then()
                 .statusCode(400)
     }
+
     @Test
-    fun testJsonMergePatchIllegalEmail(){
+    fun testJsonMergePatchIllegalEmail() {
         val id = "foo"
         val password = "123"
 
@@ -541,7 +545,7 @@ class UserTest{
             }
         """.trimIndent()
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType("application/merge-patch+json")
                 .body(dto2)
                 .patch("/$id")
@@ -550,7 +554,7 @@ class UserTest{
     }
 
     @Test
-    fun testJsonMergePatchSendingId(){
+    fun testJsonMergePatchSendingId() {
         val id = "foo"
         val password = "123"
 
@@ -566,7 +570,7 @@ class UserTest{
             }
         """.trimIndent()
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType("application/merge-patch+json")
                 .body(dto2)
                 .patch("/$id")
@@ -575,7 +579,7 @@ class UserTest{
     }
 
     @Test
-    fun testJsonMergePatchSendingFriends(){
+    fun testJsonMergePatchSendingFriends() {
         val id = "foo"
         val password = "123"
 
@@ -591,7 +595,7 @@ class UserTest{
             }
         """.trimIndent()
 
-        RestAssured.given().auth().basic(id,"123")
+        RestAssured.given().auth().basic(id, "123")
                 .contentType("application/merge-patch+json")
                 .body(dto2)
                 .patch("/$id")

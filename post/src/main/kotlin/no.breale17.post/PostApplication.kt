@@ -2,13 +2,10 @@ package no.breale17.post
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.cloud.client.loadbalancer.LoadBalanced
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient
 import org.springframework.cloud.netflix.ribbon.RibbonClient
-import org.springframework.cloud.netflix.ribbon.RibbonClients
 import org.springframework.context.annotation.Bean
 import org.springframework.security.core.Authentication
-import org.springframework.web.client.RestTemplate
 import springfox.documentation.builders.ApiInfoBuilder
 import springfox.documentation.builders.PathSelectors
 import springfox.documentation.service.ApiInfo
@@ -19,7 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2
 @SpringBootApplication
 @EnableEurekaClient
 @EnableSwagger2
-@RibbonClient(name="post")
+@RibbonClient(name = "post")
 class PostsApplication {
 
     @Bean

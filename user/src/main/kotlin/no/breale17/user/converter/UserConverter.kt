@@ -1,3 +1,7 @@
+/**
+ * Got inspiration from:
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/security/distributed-session/ds-user-service/src/main/kotlin/org/tsdes/advanced/security/distributedsession/userservice/DtoTransformer.kt
+ */
 package no.breale17.user.converter
 
 import no.breale17.dto.UserDto
@@ -7,7 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder
 
 class UserConverter {
 
-    fun transform(entity: UserEntity) : UserDto {
+    fun transform(entity: UserEntity): UserDto {
 
         return UserDto(
                 userId = entity.userId,
@@ -26,7 +30,7 @@ class UserConverter {
                   limit: Int,
                   onDb: Long,
                   maxFromDb: Int,
-                  baseUri: UriComponentsBuilder) : PageDto<UserDto>{
+                  baseUri: UriComponentsBuilder): PageDto<UserDto> {
         val users = entities.map { transform(it) }.toMutableList()
         return PageDto.withLinksBasedOnOffsetAndLimitParameters(
                 list = users,

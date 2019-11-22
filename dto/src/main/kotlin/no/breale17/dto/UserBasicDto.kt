@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 
 @ApiModel(description = "Basic Information about a user")
-data class UserBasicDto (
+data class UserBasicDto(
         @ApiModelProperty("userId of the user")
         var userId: String? = null,
 

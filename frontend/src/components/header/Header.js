@@ -1,7 +1,7 @@
 import React from "react";
 import "./Header.css";
-import {Col, Collapse, Nav, Navbar, NavItem, NavbarBrand, Button, NavbarToggler, Row} from "reactstrap";
-import { Link, withRouter } from "react-router-dom";
+import {Button, Col, Collapse, Nav, Navbar, NavbarToggler, NavItem, Row} from "reactstrap";
+import {Link} from "react-router-dom";
 import {requestHandler} from "../../utils/RequestHandler"
 
 export default class Header extends React.Component {
@@ -18,9 +18,9 @@ export default class Header extends React.Component {
 
     logout = async () => {
         console.log("LOGOUT CLICKED");
-        await requestHandler.logout().then(r =>  {
+        await requestHandler.logout().then(r => {
             this.props.history.push('/')
-        }).catch(e =>  this.props.history.push('/'))
+        }).catch(e => this.props.history.push('/'))
     };
 
     render() {
@@ -49,7 +49,7 @@ export default class Header extends React.Component {
                                         </Button>
                                     </NavItem>
                                 </Nav>
-                            :
+                                :
                                 <Nav className="ml-auto" navbar>
                                     <NavItem>
                                         <Button color="primary">
@@ -57,7 +57,7 @@ export default class Header extends React.Component {
                                         </Button>
                                     </NavItem>
                                     <NavItem>
-                                        <Button onClick={()=>this.logout()} color="primary">
+                                        <Button onClick={() => this.logout()} color="primary">
                                             Logout
                                         </Button>
                                     </NavItem>

@@ -1,23 +1,13 @@
 // https://github.com/arcuri82/web_development_and_api_design
 import React from 'react';
-import {Link, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import {requestHandler} from "../../utils/RequestHandler"
-import {
-    Alert,
-    Button,
-    Card,
-    CardBody, CardTitle,
-    Input,
-    InputGroup,
-    InputGroupAddon,
-    InputGroupText,
-    UncontrolledAlert
-} from "reactstrap";
+import {Button, Card, CardBody, CardTitle, Input, InputGroup, UncontrolledAlert} from "reactstrap";
 
 
-export class Signup extends React.Component{
+export class Signup extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -27,7 +17,7 @@ export class Signup extends React.Component{
         };
     }
 
-    onUsernameChange = (event) =>{
+    onUsernameChange = (event) => {
         this.setState({username: event.target.value});
     };
 
@@ -36,38 +26,38 @@ export class Signup extends React.Component{
     };
 
     doSignUp = async () => {
-        const { onUserChange } = this.props;
+        const {onUserChange} = this.props;
         const {username, password} = this.state;
         this.setState({errorMsg: null});
 
         requestHandler.signUp(username, password).then(res => {
-            if(res.status === 204){
+            if (res.status === 204) {
                 requestHandler.getAuthUser().then(res => {
-                    if(res.status === 200){
+                    if (res.status === 200) {
                         console.log(res)
                         onUserChange(res.data.data)
-                        this.props.history.push('/register/userinformation/'+res.data.data.name);
-                    }else if(res.message !== null){
+                        this.props.history.push('/register/userinformation/' + res.data.data.name);
+                    } else if (res.message !== null) {
                         this.setState({errorMsg: res.data.message});
                     }
                 })
-            }else if(res.data.message !== null){
+            } else if (res.data.message !== null) {
                 this.setState({errorMsg: res.data.message});
             }
-        }).catch( e => this.setState({errorMsg: "Could not execute request"}))
+        }).catch(e => this.setState({errorMsg: "Could not execute request"}))
 
     };
 
 
-    render(){
+    render() {
 
         let error = <div></div>;
-        if(this.state.errorMsg !== null){
+        if (this.state.errorMsg !== null) {
             error = <UncontrolledAlert color="danger">{this.state.errorMsg}</UncontrolledAlert>
         }
 
 
-        return(
+        return (
             <div>
                 <Card>
                     <CardBody>
@@ -75,21 +65,21 @@ export class Signup extends React.Component{
                         <InputGroup>
                             <Input type="text"
                                    id="usernameInput"
-                                   onChange={(e)=>this.onUsernameChange(e)}
+                                   onChange={(e) => this.onUsernameChange(e)}
                                    value={this.state.username}
-                                   placeholder="username" />
+                                   placeholder="username"/>
                         </InputGroup>
                         <InputGroup>
                             <Input type="password"
                                    id="passwordInput"
-                                   onChange={(e)=>this.onPasswordChange(e)}
+                                   onChange={(e) => this.onPasswordChange(e)}
                                    value={this.state.password}
-                                   placeholder="password" />
+                                   placeholder="password"/>
                         </InputGroup>
 
                         {error}
 
-                        <Button onClick={()=>this.doSignUp()} id="loginBtn" color="primary">Register</Button>
+                        <Button onClick={() => this.doSignUp()} id="loginBtn" color="primary">Register</Button>
                     </CardBody>
                 </Card>
             </div>);

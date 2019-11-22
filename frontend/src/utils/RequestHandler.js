@@ -31,7 +31,7 @@ const getAuthUser = async () => {
 };
 
 const updateUserInformation = async (userId, name, surname, middlename, email) => {
-    return await instance.put('/users/'+userId,
+    return await instance.put('/users/' + userId,
         {
             'userId': userId,
             'name': name,
@@ -44,7 +44,7 @@ const updateUserInformation = async (userId, name, surname, middlename, email) =
 };
 
 const getUserInformation = async (userId) => {
-    return await instance.get('/users/'+userId).then(response => {
+    return await instance.get('/users/' + userId).then(response => {
         return response
     })
 };
@@ -69,7 +69,7 @@ const getAllPosts = async (path = '/posts') => {
 
 const createPost = async (title, message) => {
     const dateObj = new Date();
-    const date = dateObj.getFullYear()+"-"+dateObj.getMonth()+"-"+dateObj.getDay();
+    const date = dateObj.getFullYear() + "-" + dateObj.getMonth() + "-" + dateObj.getDay();
     return await instance.post('/posts',
         {
             'title': title,
@@ -85,7 +85,7 @@ const logout = async () => {
     })
 };
 
-const sendFriendRequest = async (fromId,toId) => {
+const sendFriendRequest = async (fromId, toId) => {
     return await instance.post('/users/friendrequest',
         {
             'from': fromId,
@@ -95,7 +95,7 @@ const sendFriendRequest = async (fromId,toId) => {
     })
 };
 
-const approveFriendRequest = async (fromId,toId) => {
+const approveFriendRequest = async (fromId, toId) => {
     return await instance.put('/users/friendrequest',
         {
             'from': fromId,
@@ -106,7 +106,7 @@ const approveFriendRequest = async (fromId,toId) => {
     })
 };
 
-const denyFriendRequest = async (fromId,toId) => {
+const denyFriendRequest = async (fromId, toId) => {
     return await instance.put('/users/friendrequest',
         {
             'from': fromId,
@@ -116,7 +116,6 @@ const denyFriendRequest = async (fromId,toId) => {
         return response
     })
 };
-
 
 
 export const requestHandler = {

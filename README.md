@@ -1,4 +1,6 @@
 # microservice-exam
+ - Exam text can be found [here](./doc/PG6101_Hjemmeeksamen.pdf)
+ - Kandidat nr: 5019
 
 #### How to run?
 1. mvn clean package
@@ -12,7 +14,7 @@ Then access either the frontend or swagger doc
 
 #### Swagger DOC
 Run application from test folder and go to endpoint: [swagger-ui](http://localhost:8080/swagger-ui.html#/)
-You will be asked for username and password and by default this is:
+If you are asked for login you can apply this information:
 - username = admin
 - password = admin
 
@@ -21,14 +23,57 @@ Sometimes a site reload is nessesary to get "fresh" information. This is because
 
 I choose to only have one feed in the frontend to display the posts belonging to the logged in user and the posts belonging to the friends.
 
-#### Coverage
- - Authentication: -%
- - User: -%
- - Post: -%
+default login:
+- admin:
+    - username = a
+    - password = a
+- user:
+    - username = b
+    - password = b
 
-plus E2E-tests
+##### Frontend flow
+First thing when accessing the frontend is welcoming page, here can you choose to login or register.
+ - if you login then you will get access to the "feed"-page
+ - if you register then you will first create the user information before getting to the "feed"-page
+
+When you are logged in:
+ - top left: current user information
+ - left second: form to create a new post
+ - left third: all posts that is posted by either you or you're friends.
+ - top right: all users that is registered. You can only access basic and public user information
+ - right second: your friends
+ - right second: friend requests that has been sent
+ - right third: friend request received
+
+
+#### Coverage
+ - Authentication: 91%
+ - User: 79%
+ - Post: 80%
+
+plus E2E-tests (E2E-test wont give me a coverage)
+
+#### Extras
+ - Used shared modules for dto and utils to achieve more DRY (Do not Repeat Yourself) code.
+ - Splitted the whole project into several microservices that is independent of each other.
+
+
+#### Json-Merge-Patch
+Example of json merge patch can be seen at [./user/src/main/kotlin/no/breale17/user/api/UserApi.kt](./user/src/main/kotlin/no/breale17/user/api/UserApi.kt)
+
+#### Known issues
+There was some issues regarding the frontend where friend requests that are answered will not be added to friends and that the
+wont automatically update information after events. The last thing could often be solved with a window reload and the friend issue does
+not happened in tests and since we are focusing on the backend i had to let it pass because of the time left on the exam.
+
+Also the application runner in authentication module wont run every time. Tried to solve it before i had to move on.
+
+#### Graphql
+Started on implementing it, but didn't have time to complete and therefore had to remove it from the project to make the code compile.
+ 
 
 ## Tasks
+I have put a x on every task that i have done.
 
 #### E
 - [x] Write a new REST API using SpringBoot and Kotlin.
@@ -86,3 +131,8 @@ plus E2E-tests
 
 - [ ] A new GraphQL API should handle advertisement messages, to show on home-page
 - [ ] Every time there is a new friendship request accepted in the REST API, such message should be sent to RabbitMQ. The GraphQL API should subscribe to such events, and use the received information somehow (completely up to you) to decide which ads to show next
+
+## Sources
+If i have used some inspiration from external sources there would be marked in the top of the file.
+All of the pom.xml files, docker files & docker-compose.yml file have almost been copy & paste from the github curriculum.
+Most of my inspiration is from the curriculum at github [https://github.com/arcuri82/testing_security_development_enterprise_systems](https://github.com/arcuri82/testing_security_development_enterprise_systems)

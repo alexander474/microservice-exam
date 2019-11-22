@@ -1,23 +1,13 @@
 // https://github.com/arcuri82/web_development_and_api_design
 import React from 'react';
-import {Link, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import {requestHandler} from "../../utils/RequestHandler"
-import {
-    Alert,
-    Button,
-    Card,
-    CardBody, CardTitle,
-    Input,
-    InputGroup,
-    InputGroupAddon,
-    InputGroupText,
-    UncontrolledAlert
-} from "reactstrap";
+import {Button, Card, CardBody, CardTitle, Input, InputGroup, UncontrolledAlert} from "reactstrap";
 
 
-export class UserInformationForm extends React.Component{
+export class UserInformationForm extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -30,23 +20,23 @@ export class UserInformationForm extends React.Component{
         };
     }
 
-    onUsernameChange = (event) =>{
+    onUsernameChange = (event) => {
         this.setState({username: event.target.value});
     };
 
-    onNameChange = (event) =>{
+    onNameChange = (event) => {
         this.setState({name: event.target.value});
     };
 
-    onMiddleNameChange = (event) =>{
+    onMiddleNameChange = (event) => {
         this.setState({middlename: event.target.value});
     };
 
-    onSurnameChange = (event) =>{
+    onSurnameChange = (event) => {
         this.setState({surname: event.target.value});
     };
 
-    onEmailChange = (event) =>{
+    onEmailChange = (event) => {
         this.setState({email: event.target.value});
     };
 
@@ -54,7 +44,7 @@ export class UserInformationForm extends React.Component{
         const {username, name, middlename, surname, email} = this.state;
         this.setState({errorMsg: null});
 
-        if(username !== null && username !== undefined) {
+        if (username !== null && username !== undefined) {
             requestHandler.updateUserInformation(username, name, surname, middlename, email).then(res => {
                 if (res.status === 201 || res.status === 204) {
                     this.props.history.push('/');
@@ -62,22 +52,22 @@ export class UserInformationForm extends React.Component{
                     this.setState({errorMsg: res.data.message});
                 }
             })
-        }else{
+        } else {
             this.setState({errorMsg: "UserId could not be read from path"});
         }
 
     };
 
 
-    render(){
+    render() {
 
         let error = <div></div>;
-        if(this.state.errorMsg !== null){
+        if (this.state.errorMsg !== null) {
             error = <UncontrolledAlert color="danger">{this.state.errorMsg}</UncontrolledAlert>
         }
 
 
-        return(
+        return (
             <div>
                 <Card>
                     <CardBody>
@@ -85,35 +75,35 @@ export class UserInformationForm extends React.Component{
                         <InputGroup>
                             <Input type="text"
                                    id="nameInput"
-                                   onChange={(e)=>this.onNameChange(e)}
+                                   onChange={(e) => this.onNameChange(e)}
                                    value={this.state.name}
-                                   placeholder="name" />
+                                   placeholder="name"/>
                         </InputGroup>
                         <InputGroup>
                             <Input type="text"
                                    id="middlenameInput"
-                                   onChange={(e)=>this.onMiddleNameChange(e)}
+                                   onChange={(e) => this.onMiddleNameChange(e)}
                                    value={this.state.middlename}
-                                   placeholder="middlename" />
+                                   placeholder="middlename"/>
                         </InputGroup>
                         <InputGroup>
                             <Input type="text"
                                    id="surnameInput"
-                                   onChange={(e)=>this.onSurnameChange(e)}
+                                   onChange={(e) => this.onSurnameChange(e)}
                                    value={this.state.surname}
-                                   placeholder="surname" />
+                                   placeholder="surname"/>
                         </InputGroup>
                         <InputGroup>
                             <Input type="text"
                                    id="emailInput"
-                                   onChange={(e)=>this.onEmailChange(e)}
+                                   onChange={(e) => this.onEmailChange(e)}
                                    value={this.state.email}
-                                   placeholder="email" />
+                                   placeholder="email"/>
                         </InputGroup>
 
                         {error}
 
-                        <Button onClick={()=>this.updateUser()} id="userUpdateBtn" color="primary">Update</Button>
+                        <Button onClick={() => this.updateUser()} id="userUpdateBtn" color="primary">Update</Button>
                     </CardBody>
                 </Card>
             </div>);

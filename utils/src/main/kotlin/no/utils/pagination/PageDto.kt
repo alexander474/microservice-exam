@@ -1,10 +1,12 @@
+/**
+ * Got inspiration from:
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/rest/pagination/src/main/kotlin/org/tsdes/advanced/rest/pagination/dto/hal/PageDto.kt
+ */
 package no.utils.pagination
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
-import no.utils.pagination.HalLink
-import no.utils.pagination.HalObject
 import org.springframework.web.util.UriComponentsBuilder
 import kotlin.math.max
 import kotlin.math.min
@@ -89,7 +91,7 @@ class PageDto<T>(
         set(value) {
             if (value != null) {
                 _links["previous"] = value
-            }  else {
+            } else {
                 _links.remove("previous")
             }
         }
@@ -115,7 +117,6 @@ class PageDto<T>(
     }
 
 
-
     companion object {
 
         /**
@@ -129,7 +130,7 @@ class PageDto<T>(
                 onDb: Long = 0,
                 maxFromDb: Int = 0,
                 baseUri: UriComponentsBuilder
-        ) : PageDto<T> {
+        ): PageDto<T> {
 
             val limit = (rangeMax - rangeMin) + 1
 
@@ -149,7 +150,7 @@ class PageDto<T>(
                     .build().toString()
             )
 
-            val previous = if ( rangeMin > 0) {
+            val previous = if (rangeMin > 0) {
                 HalLink(baseUri.cloneBuilder()
                         .queryParam("offset", max(rangeMin - limit, 0))
                         .queryParam("limit", min(limit, rangeMin))

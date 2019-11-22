@@ -1,3 +1,7 @@
+/**
+ * Got inspiration from:
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/rest/pagination/src/main/kotlin/org/tsdes/advanced/rest/pagination/NewsService.kt
+ */
 package no.breale17.user.repository
 
 import no.breale17.user.entity.UserEntity
@@ -13,7 +17,7 @@ interface UserRepository : CrudRepository<UserEntity, String>, UserRepositoryCus
 }
 
 @Transactional
-interface UserRepositoryCustom{
+interface UserRepositoryCustom {
 
     fun numberOfUsers(): Long
 
@@ -27,7 +31,7 @@ open class UserRepositoryImpl : UserRepositoryCustom {
     @Autowired
     private lateinit var em: EntityManager
 
-    override fun numberOfUsers(): Long{
+    override fun numberOfUsers(): Long {
         val query: TypedQuery<Long> = em.createQuery("select count(u) from UserEntity u", Long::class.javaObjectType)
         return query.singleResult
     }
@@ -40,7 +44,7 @@ open class UserRepositoryImpl : UserRepositoryCustom {
         query.maxResults = limit
 
         val result = query.resultList
-        result.forEach{
+        result.forEach {
             it.friends?.size
             it.requestsIn?.size
             it.requestsOut?.size

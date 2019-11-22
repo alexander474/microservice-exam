@@ -1,7 +1,6 @@
 // https://github.com/arcuri82/web_development_and_api_design
 import React from "react";
-import ReactDOM from "react-dom";
-import {BrowserRouter, Switch, Route} from 'react-router-dom';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
 
 
 import HomePage from "./view/HomePage";
@@ -10,7 +9,7 @@ import Signup from "./view/authentication/Signup"
 import Header from "./components/header/Header";
 import UserInformationForm from "./components/userinformation/UserInformationForm";
 import "./Global.css"
-import { requestHandler } from "./utils/RequestHandler";
+import {requestHandler} from "./utils/RequestHandler";
 
 
 export default class App extends React.Component {
@@ -31,8 +30,8 @@ export default class App extends React.Component {
 
     updateAuthUser = async () => {
         await requestHandler.getAuthUser().then(res => {
-            if(res.status === 200){
-                if(res.data !== null && res.data !== undefined) {
+            if (res.status === 200) {
+                if (res.data !== null && res.data !== undefined) {
                     if (res.data.data !== null && res.data.data !== undefined) {
                         this.onUserChange(res.data.data);
                     }
@@ -45,7 +44,7 @@ export default class App extends React.Component {
 
 
     getUserInformation = async (user) => {
-        if(user !== null) {
+        if (user !== null) {
             await requestHandler.getUserInformation(user.name).then(res => {
                 console.log(res);
                 if (res.status === 200) {
@@ -63,19 +62,19 @@ export default class App extends React.Component {
 
 
     onUserInfoChange = (userInformation) => {
-        if(userInformation !== null){
+        if (userInformation !== null) {
             this.setState({userInformation})
         }
     };
 
 
     onUserChange = async (user) => {
-        if(user !== null){
+        if (user !== null) {
             this.onIsLoggedInChange(true);
-            if(user.roles !== null) {
+            if (user.roles !== null) {
                 this.onisAdminChange(user.roles.includes("ROLE_ADMIN"))
             }
-        }else{
+        } else {
             this.onIsLoggedInChange(false);
             this.onisAdminChange(false);
         }

@@ -11,8 +11,8 @@ services:
   user-db:
     image: "postgres:10"
 
-  #### RABBITMQ ####
-  #rabbitmq:
+    #### RABBITMQ ####
+    #rabbitmq:
     #image: "rabbitmq:3"
 
   #### REDIS ####

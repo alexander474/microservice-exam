@@ -1,13 +1,12 @@
 package no.breale17.user.converter
 
 import no.breale17.dto.UserBasicDto
-import no.breale17.dto.UserDto
 import no.breale17.user.entity.UserEntity
 import no.utils.pagination.PageDto
 import org.springframework.web.util.UriComponentsBuilder
 
 class UserBasicConverter {
-    fun transform(entity: UserEntity) : UserBasicDto {
+    fun transform(entity: UserEntity): UserBasicDto {
 
         return UserBasicDto(
                 userId = entity.userId,
@@ -22,7 +21,7 @@ class UserBasicConverter {
                   limit: Int,
                   onDb: Long,
                   maxFromDb: Int,
-                  baseUri: UriComponentsBuilder) : PageDto<UserBasicDto> {
+                  baseUri: UriComponentsBuilder): PageDto<UserBasicDto> {
         val users = entities.map { transform(it) }.toMutableList()
         return PageDto.withLinksBasedOnOffsetAndLimitParameters(
                 list = users,

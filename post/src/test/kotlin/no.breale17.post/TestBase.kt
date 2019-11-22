@@ -1,3 +1,8 @@
+/**
+ * Got inspiration from:
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/microservice/gateway/gateway-service/src/test/kotlin/org/tsdes/advanced/microservice/gateway/service/ServiceApplicationTest.kt
+ * https://github.com/arcuri82/testing_security_development_enterprise_systems/blob/master/advanced/security/distributed-session/ds-user-service/src/test/kotlin/org/tsdes/advanced/security/distributedsession/userservice/ApplicationTest.kt
+ */
 package no.breale17.post
 
 import com.github.tomakehurst.wiremock.WireMockServer
@@ -9,14 +14,15 @@ import io.restassured.http.ContentType
 import no.breale17.dto.PostDto
 import no.breale17.post.repository.PostRepository
 import org.hamcrest.CoreMatchers
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.time.LocalDate
-import java.time.Month
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(classes = [(PostsApplication::class)],
@@ -30,7 +36,7 @@ abstract class TestBase {
     private lateinit var postRepository: PostRepository
 
 
-    val initTestDate = LocalDate.of(2019, Month.NOVEMBER, 19)!!
+    val initTestDate = System.currentTimeMillis() / 1000
 
     companion object {
 
@@ -38,7 +44,7 @@ abstract class TestBase {
 
         @BeforeAll
         @JvmStatic
-        fun initClass(){
+        fun initClass() {
             // RestAssured configs shared by all the tests
             RestAssured.baseURI = "http://localhost"
             RestAssured.basePath = "/posts"
@@ -68,8 +74,8 @@ abstract class TestBase {
             deleteAll()
         }
         val id = "foo"
-        val res = getAMockedJsonResponse(id,"a","a","a","a@a.com","", "", "")
-        stubJsonResponse(res,id)
+        val res = getAMockedJsonResponse(id, "a", "a", "a", "a@a.com", "", "", "")
+        stubJsonResponse(res, id)
 
         RestAssured.given().auth().basic(id, "123").get().then()
                 .statusCode(200)
@@ -77,11 +83,10 @@ abstract class TestBase {
     }
 
 
-    fun getAllPosts(): MutableList<PostDto>? {
-        val id = "foo"
-        val res = getAMockedJsonResponse(id,"a","a","a","a@a.com","bar", "", "")
-        stubJsonResponse(res,id)
-        return RestAssured.given().auth().basic(id, "123").accept(ContentType.JSON)
+    fun getAllPosts(id: String, password: String, friends: String = "", requestsIn: String = "", requestsOut: String = ""): MutableList<PostDto>? {
+        val res = getAMockedJsonResponse(id, "a", "a", "a", "a@a.com", friends, requestsIn, requestsOut)
+        stubJsonResponse(res, id)
+        return RestAssured.given().auth().basic(id, password).accept(ContentType.JSON)
                 .get()
                 .then()
                 .statusCode(200)
@@ -90,7 +95,7 @@ abstract class TestBase {
                 .getList("data.list", PostDto::class.java)
     }
 
-    fun createPost(id: String, password: String, title: String, message: String): String{
+    fun createPost(id: String, password: String, title: String, message: String): String {
         return RestAssured.given().auth().basic(id, password).contentType(ContentType.JSON)
                 .body(PostDto(title, message, initTestDate.toString()))
                 .post()

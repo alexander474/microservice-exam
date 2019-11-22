@@ -15,8 +15,8 @@ export default class UserCount extends React.Component {
     }
 
     userCount = async () => {
-        await requestHandler.getUserCount().then(r =>  {
-            if(r.status) {
+        await requestHandler.getUserCount().then(r => {
+            if (r.status) {
                 this.setState({count: r.data.data})
             }
         }).catch(e => console.log("Error retrieving usercount!"))
@@ -25,7 +25,8 @@ export default class UserCount extends React.Component {
     render() {
         return (
             <div>
-                <Badge onClick={()=>this.userCount()} color="secondary">Users: {this.state.count !== null ? this.state.count : "-"}</Badge>
+                <Badge onClick={() => this.userCount()}
+                       color="secondary">Users: {this.state.count !== null ? this.state.count : "-"}</Badge>
             </div>
         );
     }
