@@ -8,12 +8,15 @@ package no.breale17.e2etest
 import io.restassured.RestAssured
 import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
+import no.breale17.dto.FriendRequestDto
+import no.breale17.dto.FriendRequestStatus
 import no.breale17.dto.PostDto
 import no.breale17.dto.UserDto
 import org.awaitility.Awaitility.await
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
+import org.hamcrest.Matchers
 import org.hamcrest.Matchers.contains
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -201,7 +204,6 @@ class E2EDockerIT {
                 .body("data.name", equalTo(id))
                 .body("data.roles", contains("ROLE_USER"))
 
-        //createUser(id, pwd, name, middleName, surname, email)
         createUserWithCookie(cookie, id, name, middleName, surname, email)
 
         RestAssured.given().cookie("SESSION", cookie)
@@ -241,7 +243,6 @@ class E2EDockerIT {
                 .body("data.name", equalTo(id))
                 .body("data.roles", contains("ROLE_USER"))
 
-        //createUser(id, pwd, name, middleName, surname, email)
         createUserWithCookie(cookie, id, name, middleName, surname, email)
         val allPosts = getAllPosts(cookie)
 
@@ -262,6 +263,127 @@ class E2EDockerIT {
                 .then()
                 .statusCode(200)
                 .body("data.list.size()", CoreMatchers.equalTo(allPosts?.size?.plus(1)))
+
+    }
+
+    @Test
+    fun testSeePostsOfFriends(){
+        val id = createUniqueId()
+        val pwd = createUniqueId()
+        val id2 = createUniqueId()
+        val pwd2 = createUniqueId()
+
+        val name = createUniqueId()
+        val name2 = createUniqueId()
+        val middleName = createUniqueId()
+        val middleName2 = createUniqueId()
+        val surname = createUniqueId()
+        val surname2 = createUniqueId()
+        val email2 = createUniqueId() + "@" + createUniqueId() + ".no"
+        val email = createUniqueId() + "@" + createUniqueId() + ".no"
+
+        val title = createUniqueId()
+        val title2 = createUniqueId()
+        val message = createUniqueId()
+        val message2 = createUniqueId()
+
+        val cookie = registerUser(id, pwd)
+        val cookie2 = registerUser(id2, pwd2)
+
+        given().get("/api/v1/auth/user")
+                .then()
+                .statusCode(401)
+
+        given().cookie("SESSION", cookie)
+                .get("/api/v1/auth/user")
+                .then()
+                .statusCode(200)
+                .body("data.name", equalTo(id))
+                .body("data.roles", contains("ROLE_USER"))
+
+        createUserWithCookie(cookie, id, name, middleName, surname, email)
+        createUserWithCookie(cookie2, id2, name2, middleName2, surname2, email2)
+        val allPosts = getAllPosts(cookie)
+        val allPosts2 = getAllPosts(cookie2)
+
+        RestAssured.given().cookie("SESSION", cookie)
+                .get("api/v1/users/$id")
+                .then()
+                .statusCode(200)
+                .body("data.name", CoreMatchers.equalTo(name))
+                .body("data.middleName", CoreMatchers.equalTo(middleName))
+                .body("data.surname", CoreMatchers.equalTo(surname))
+                .body("data.email", CoreMatchers.equalTo(email))
+                .body("data.friends.size()", CoreMatchers.equalTo(0))
+
+        createPostWithCookie(cookie, id, title, message)
+        createPostWithCookie(cookie2, id2, title2, message2)
+
+        RestAssured.given().cookie("SESSION", cookie)
+                .get("api/v1/posts")
+                .then()
+                .statusCode(200)
+                .body("data.list.size()", CoreMatchers.equalTo(allPosts?.size?.plus(1)))
+
+        RestAssured.given().cookie("SESSION", cookie2)
+                .get("api/v1/posts")
+                .then()
+                .statusCode(200)
+                .body("data.list.size()", CoreMatchers.equalTo(allPosts2?.size?.plus(1)))
+
+        val friendRequest = FriendRequestDto(id, id2)
+        val friendRequestResponse = FriendRequestDto(id, id2, FriendRequestStatus.APPROVED)
+
+        //Send request from user 1
+        RestAssured.given().cookie("SESSION", cookie)
+                .contentType(ContentType.JSON)
+                .body(friendRequest)
+                .post("api/v1/users/friendrequest")
+                .then()
+                .statusCode(200)
+
+        //Approve friend request from user1
+        RestAssured.given().cookie("SESSION", cookie2)
+                .contentType(ContentType.JSON)
+                .body(friendRequestResponse)
+                .put("api/v1/users/friendrequest")
+                .then()
+                .statusCode(200)
+
+        //Check that they are friends
+        RestAssured.given().cookie("SESSION", cookie)
+                .accept(ContentType.JSON)
+                .get("api/v1/users/$id")
+                .then()
+                .statusCode(200)
+                .body("data.friends", Matchers.contains(id2))
+                .body("data.friends.size()", CoreMatchers.equalTo(1))
+                .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
+
+        RestAssured.given().cookie("SESSION", cookie2)
+                .accept(ContentType.JSON)
+                .get("api/v1/users/$id2")
+                .then()
+                .statusCode(200)
+                .body("data.friends", Matchers.contains(id))
+                .body("data.friends.size()", CoreMatchers.equalTo(1))
+                .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
+                .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
+
+        //Check that they can see eachothers posts
+        RestAssured.given().cookie("SESSION", cookie)
+                .get("api/v1/posts")
+                .then()
+                .statusCode(200)
+                .body("data.list.size()", CoreMatchers.equalTo(allPosts?.size?.plus(2)))
+
+        RestAssured.given().cookie("SESSION", cookie2)
+                .get("api/v1/posts")
+                .then()
+                .statusCode(200)
+                .body("data.list.size()", CoreMatchers.equalTo(allPosts2?.size?.plus(2)))
+
 
     }
 

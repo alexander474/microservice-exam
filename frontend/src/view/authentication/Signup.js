@@ -61,7 +61,7 @@ export class Signup extends React.Component {
             <div>
                 <Card>
                     <CardBody>
-                        <CardTitle>Login</CardTitle>
+                        <CardTitle>Register</CardTitle>
                         <InputGroup>
                             <Input type="text"
                                    id="usernameInput"

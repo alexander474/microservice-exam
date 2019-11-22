@@ -12,7 +12,9 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import io.restassured.RestAssured
 import io.restassured.http.ContentType
 import no.breale17.dto.PostDto
+import no.breale17.dto.UserDto
 import no.breale17.post.repository.PostRepository
+import no.utils.wrapper.WrappedResponse
 import org.hamcrest.CoreMatchers
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -107,18 +109,7 @@ abstract class TestBase {
 
 
     fun getAMockedJsonResponse(userId: String, name: String, middlename: String, surname: String, email: String, friends: String, requestsIn: String, requestsOut: String): String {
-        return """
-        {
-            "userId": "$userId",
-            "name": "$name",
-            "middlename":"$middlename", 
-            "surname": "$surname",
-            "email": "$email",
-            "friends": [$friends],
-            "requestsIn": [$requestsIn],
-            "requestsOut": [$requestsOut]
-        }
-        """
+        return """{"data":{"userId": "$userId", "name": "$name", "middlename": "$middlename", "surname": "$surname", "email": "$email", "friends": [$friends], "requestsIn": [$requestsIn], "requestsOut": [$requestsOut]}}""".trimIndent()
     }
 
     fun stubJsonResponse(json: String, userId: String) {
@@ -136,6 +127,7 @@ abstract class TestBase {
                         .willReturn(WireMock.aResponse()
                                 .withStatus(200)
                                 .withHeader("Content-Type", "application/json")
+                                .withHeader("Content-Length", "" + json.toByteArray(charset("utf-8")).size)
                                 .withBody(json)))
 
         wiremockServer.stubFor(

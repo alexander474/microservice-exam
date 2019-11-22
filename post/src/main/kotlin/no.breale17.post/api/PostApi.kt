@@ -10,6 +10,7 @@ import no.utils.pagination.PageDto
 import no.utils.wrapper.WrappedResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.*
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpStatusCodeException
@@ -39,6 +40,7 @@ class PostApi {
     @Value("\${userServiceAddress}")
     private lateinit var userServiceAddress: String
 
+
     @ApiOperation("*")
     @GetMapping(produces = [(MediaType.APPLICATION_JSON_VALUE)])
     fun getAll(
@@ -63,21 +65,18 @@ class PostApi {
 
         val client = RestTemplate()
 
+
         val requestHeaders = HttpHeaders()
         if (ignoreSession == null || !ignoreSession) {
             requestHeaders.add("cookie", "SESSION=$cookie")
         }
         val requestEntity = HttpEntity(null, requestHeaders)
 
+        // Got some inspiration from https://stackoverflow.com/questions/52581729/create-instance-of-spring´s-parameterizedtypereference-in-kotlin
         val response = try {
-            client.exchange(uri, HttpMethod.GET, requestEntity, UserDto::class.java)
+            client.exchange(uri, HttpMethod.GET, requestEntity, object: ParameterizedTypeReference<WrappedResponse<UserDto>>(){})
         } catch (e: HttpStatusCodeException) {
             return if (e.statusCode.value() == 403) {
-                /*
-                   Note: this is just an example.
-                   Using a different code just to make sure
-                   to distinguish this case in the tests
-                */
                 return ResponseEntity.status(400).body(
                         WrappedResponse<PageDto<PostDto>>(
                                 message = e.message,
@@ -92,7 +91,8 @@ class PostApi {
             }
         }
 
-        val user = response.body
+        val wrapper = response.body as WrappedResponse
+        val user = wrapper.data as UserDto
 
 
         if (user === null) {

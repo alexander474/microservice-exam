@@ -192,7 +192,7 @@ class UserTest {
 
 
         //Send friend request from foo
-        RestAssured.given().auth().basic(id, "123")
+        RestAssured.given().auth().basic(id, password)
                 .contentType(ContentType.JSON)
                 .body(friendRequest)
                 .post("/friendrequest")
@@ -200,7 +200,7 @@ class UserTest {
                 .statusCode(200)
 
         //Check that request is stored in both users
-        RestAssured.given().auth().basic(id, "123")
+        RestAssured.given().auth().basic(id, password)
                 .accept(ContentType.JSON)
                 .get("/$id")
                 .then()
@@ -209,7 +209,7 @@ class UserTest {
                 .body("data.requestsIn.size()", CoreMatchers.equalTo(0))
                 .body("data.requestsOut.size()", CoreMatchers.equalTo(1))
 
-        RestAssured.given().auth().basic(id2, "123")
+        RestAssured.given().auth().basic(id2, password)
                 .accept(ContentType.JSON)
                 .get("/$id2")
                 .then()
@@ -219,7 +219,7 @@ class UserTest {
                 .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
 
         //Approve friend request from bar
-        RestAssured.given().auth().basic(id2, "123")
+        RestAssured.given().auth().basic(id2, password)
                 .contentType(ContentType.JSON)
                 .body(friendRequestResponse)
                 .put("/friendrequest")
@@ -227,7 +227,7 @@ class UserTest {
                 .statusCode(200)
 
         //Check that they are friends
-        RestAssured.given().auth().basic(id, "123")
+        RestAssured.given().auth().basic(id, password)
                 .accept(ContentType.JSON)
                 .get("/$id")
                 .then()
@@ -238,7 +238,7 @@ class UserTest {
                 .body("data.requestsOut.size()", CoreMatchers.equalTo(0))
 
 
-        RestAssured.given().auth().basic(id2, "123")
+        RestAssured.given().auth().basic(id2, password)
                 .accept(ContentType.JSON)
                 .get("/$id2")
                 .then()

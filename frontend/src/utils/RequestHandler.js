@@ -98,8 +98,8 @@ const sendFriendRequest = async (fromId, toId) => {
 const approveFriendRequest = async (fromId, toId) => {
     return await instance.put('/users/friendrequest',
         {
-            'from': fromId,
-            'to': toId,
+            'from': toId,
+            'to': fromId,
             'status': "APPROVED"
         }).then(response => {
         return response
@@ -109,8 +109,8 @@ const approveFriendRequest = async (fromId, toId) => {
 const denyFriendRequest = async (fromId, toId) => {
     return await instance.put('/users/friendrequest',
         {
-            'from': fromId,
-            'to': toId,
+            'from': toId,
+            'to': fromId,
             'status': "DENIED"
         }).then(response => {
         return response

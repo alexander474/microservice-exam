@@ -3,14 +3,17 @@
  - Kandidat nr: 5019
 
 #### How to run?
-1. mvn clean package
-2. docker-compose up --build
+First make sure that no other process is running on port 80 or 8080 if you are running only one service locally
+
+1. `mvn clean package` or `mvn package -DskipTests` (This will skip tests)
+2. `docker-compose up --build`
 3. frontend will be accessible from [localhost:80](http://localhost/)
 
 To run only one microservice: Run local application runner in the test folders
-Then access either the frontend or swagger doc
+Then access either the API or swagger doc
 [localhost:8080](http://localhost:8080/) - [swagger-ui](http://localhost:8080/swagger-ui.html#/)
 
+To run all tests: `mvn clean verify`
 
 #### Swagger DOC
 Run application from test folder and go to endpoint: [swagger-ui](http://localhost:8080/swagger-ui.html#/)
@@ -18,8 +21,15 @@ If you are asked for login you can apply this information:
 - username = admin
 - password = admin
 
+#### Service duplication and ribbon
+ - Post service is running on two instances
+
+#### Authentication
+I have set up distributed sessions that share the same authentication. This means that you can authenticate at one service and use for example
+same cookie to authenticate on the other services.
+
 #### Frontend
-Sometimes a site reload is nessesary to get "fresh" information. This is because my main focus was on the backend and not frontend.
+Sometimes a site reload is necessary to get "fresh" information. This is because my main focus was on the backend and not frontend.
 
 I choose to only have one feed in the frontend to display the posts belonging to the logged in user and the posts belonging to the friends.
 
@@ -32,11 +42,11 @@ default login:
     - password = b
 
 ##### Frontend flow
-First thing when accessing the frontend is welcoming page, here can you choose to login or register.
- - if you login then you will get access to the "feed"-page
- - if you register then you will first create the user information before getting to the "feed"-page
+First thing when accessing the frontend is welcoming page, here can you choose to login or register. [homepage_not_loggedin](./doc/images/not_loggedIn_Homepage.png)
+ - if you login then you will get access to the "feed"-page [login](./doc/images/login_page.png)
+ - if you register then you will first create the user information before getting to the "feed"-page [register](./doc/images/register_page.png)
 
-When you are logged in:
+When you are logged in: [homepage_loggedin](./doc/images/loggedIn_Homepage.png)
  - top left: current user information
  - left second: form to create a new post
  - left third: all posts that is posted by either you or you're friends.
@@ -46,7 +56,7 @@ When you are logged in:
  - right third: friend request received
 
 
-#### Coverage
+#### Coverage (IntelliJ)
  - Authentication: 91%
  - User: 79%
  - Post: 80%
@@ -62,18 +72,17 @@ plus E2E-tests (E2E-test wont give me a coverage)
 Example of json merge patch can be seen at [./user/src/main/kotlin/no/breale17/user/api/UserApi.kt](./user/src/main/kotlin/no/breale17/user/api/UserApi.kt)
 
 #### Known issues
-There was some issues regarding the frontend where friend requests that are answered will not be added to friends and that the
-wont automatically update information after events. The last thing could often be solved with a window reload and the friend issue does
-not happened in tests and since we are focusing on the backend i had to let it pass because of the time left on the exam.
+One issue is that after some events the frontend wont rerender so the information wont update, if this happens just reload the page.
+since we are focusing on the backend i had to let this problem pass because of the time left on the exam.
 
 Also the application runner in authentication module wont run every time. Tried to solve it before i had to move on.
 
 #### Graphql
-Started on implementing it, but didn't have time to complete and therefore had to remove it from the project to make the code compile.
+Started implementing it, but didn't have time to complete and therefore had to remove it from the project to make the code compile.
  
 
 ## Tasks
-I have put a x on every task that i have done.
+I have put a checked mark (x if you read it as text) on every task that i have done.
 
 #### E
 - [x] Write a new REST API using SpringBoot and Kotlin.
@@ -113,7 +122,7 @@ I have put a x on every task that i have done.
 - [x] ... visualize the current user details
 - [x] ... create a new timeline message for the current user
 - [x] ... display all timeline messages of a user, sorted by time (Im sorting by id, this is incremental andi choose therefore to sort on id)
-- [x] ... create/accept friendship requests (Testing can verify this)
+- [x] ... create/accept friendship requests
 
 #### B
 - [x] You MUST have security mechanisms in place to protect your REST APIs (e.g., although GET operations might be allowed to everyone, write operations like POST/PUT/PATCH do require authentication and authorization).

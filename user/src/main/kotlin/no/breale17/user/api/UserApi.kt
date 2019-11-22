@@ -377,7 +377,7 @@ class UserApi {
 
         if (user.name === null) {
             return ResponseEntity.status(400).body(
-                    WrappedResponse<Unit>(code = 400)
+                    WrappedResponse<Unit>(code = 400, message = "No authenticated user found")
                             .validated())
         }
 
@@ -389,14 +389,46 @@ class UserApi {
                     ).validated())
         }
 
+        if (friendRequest.to != user.name) {
+            return ResponseEntity.status(400).body(
+                    WrappedResponse<Unit>(
+                            code = 400,
+                            message = "You can only answer requests that are meant to you"
+                    ).validated())
+        }
+
+        if(userServce.checkIfAlreadyFriends(friendRequest.from!!, friendRequest.to!!)){
+            return ResponseEntity.status(400).body(
+                    WrappedResponse<Unit>(
+                            code = 400,
+                            message = "You are already friends"
+                    ).validated())
+        }
+
+        if(!userServce.checkIfFriendRequestExists(friendRequest.from!!, friendRequest.to!!)){
+            return ResponseEntity.status(400).body(
+                    WrappedResponse<Unit>(
+                            code = 400,
+                            message = "There is no friend request from this user"
+                    ).validated())
+        }
 
         var message = ""
+        var success = false
         if (friendRequest.status === FriendRequestStatus.APPROVED) {
-            userServce.addFriend(friendRequest.from!!, friendRequest.to!!)
+            success = userServce.addFriend(friendRequest.from!!, friendRequest.to!!)
             message = "FRIEND ADDED"
         } else if (friendRequest.status === FriendRequestStatus.DENIED) {
-            userServce.removeRequest(friendRequest.from!!, friendRequest.to!!)
+            success = userServce.removeRequest(friendRequest.from!!, friendRequest.to!!)
             message = "FRIEND REQUEST REMOVED"
+        }
+
+        if(!success){
+            return ResponseEntity.status(400).body(
+                    WrappedResponse<Unit>(
+                            code = 400,
+                            message = "Something went wrong! Could not execute request"
+                    ).validated())
         }
 
         return ResponseEntity.status(200).body(

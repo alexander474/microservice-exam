@@ -25,7 +25,7 @@ class UserService {
         saveUser(UserDto("a", "admin", "admin_middlename", "admin", "admin@admin.admin"))
         saveUser(UserDto("b", "foo", "user_middlename", "bar", "foo@bar.bar"))
         sendRequest("a", "b")
-        addFriend("b", "a")
+        addFriend("a", "b")
     }
 
     @Autowired
@@ -124,7 +124,8 @@ class UserService {
     }
 
     @Transactional
-    fun removeRequest(from: String, to: String) {
+    fun removeRequest(from: String, to: String): Boolean {
+        var removed = false
         val friendRequestExists = checkIfFriendRequestExists(from, to)
         val userFrom = getById(from)
         val userTo = getById(to)
@@ -137,12 +138,14 @@ class UserService {
             userTo.requestsIn = listTo
             saveUser(userFrom)
             saveUser(userTo)
+            removed = true
         }
+        return removed
     }
 
     @Transactional
     fun addFriend(from: String, to: String): Boolean {
-        val added = false
+        var added = false
         val friendRequestExists = checkIfFriendRequestExists(from, to)
         val isFriend = checkIfAlreadyFriends(from, to)
         val userFrom = getById(from)
@@ -171,6 +174,7 @@ class UserService {
             //save
             saveUser(userFrom)
             saveUser(userTo)
+            added = true;
         }
         return added
     }

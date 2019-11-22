@@ -25,7 +25,7 @@ class PostService {
     fun getAll(userId: String, userIds: List<String>, offset: Int, limit: Int, onDb: Long, maxPageLimit: Int, builder: UriComponentsBuilder): PageDto<PostDto> {
         val ids = userIds.toMutableSet()
         ids.add(userId)
-        val list = postRepository.getAllPostsByUserId(ids, offset, limit)
+        val list = postRepository.getAllPostsByUserId(ids.toList(), offset, limit)
         return PostConverter().transform(list, offset, limit, onDb, maxPageLimit, builder)
     }
 
